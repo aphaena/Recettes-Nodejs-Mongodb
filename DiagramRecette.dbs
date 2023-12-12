@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="MongoDb" id="Project-b8d" database="MongoDb" >
+	<schema name="recettes" >
+		<table name="ingredients" virtual="y" >
+			<column name="_id" type="objectId" length="800" decimal="0" jt="-8" mandatory="y" />
+			<column name="name" type="string" length="800" decimal="0" jt="12" mandatory="y" />
+			<column name="nutritionInfo" type="object" length="800" decimal="0" jt="4999544" mandatory="y" >
+				<column name="calories" type="object" length="800" decimal="0" jt="4999544" mandatory="y" />
+				<column name="protein" type="object" length="800" decimal="0" jt="4999544" mandatory="y" />
+				<column name="fat" type="object" length="800" decimal="0" jt="4999544" mandatory="y" />
+			</column>
+			<column name="__v" type="int" length="800" decimal="0" jt="4" mandatory="y" />
+			<index name="_id_" unique="PRIMARY_KEY" >
+				<column name="_id" />
+			</index>
+		</table>
+		<table name="recipes" virtual="y" >
+			<column name="_id" type="objectId" length="800" decimal="0" jt="-8" mandatory="y" />
+			<column name="title" type="string" length="800" decimal="0" jt="12" mandatory="y" />
+			<column name="description" type="string" length="800" decimal="0" jt="12" mandatory="y" />
+			<column name="ingredients" type="object" length="800" decimal="0" jt="4999544" mandatory="y" >
+				<column name="name" type="string" length="800" decimal="0" jt="12" mandatory="y" />
+				<column name="quantity" type="string" length="800" decimal="0" jt="12" mandatory="y" />
+			</column>
+			<column name="steps" type="array[string]" length="800" decimal="0" jt="2003" mandatory="y" />
+			<column name="prepTime" type="int" length="800" decimal="0" jt="4" mandatory="y" />
+			<column name="images" type="array[string]" length="800" decimal="0" jt="2003" mandatory="y" />
+			<column name="comments" type="object" length="800" decimal="0" jt="4999544" mandatory="y" >
+				<column name="user" type="objectId" length="800" decimal="0" jt="-8" mandatory="y" />
+				<column name="text" type="string" length="800" decimal="0" jt="12" mandatory="y" />
+				<column name="rating" type="int" length="800" decimal="0" jt="4" mandatory="y" />
+				<column name="createdAt" type="date" length="800" decimal="0" jt="91" mandatory="y" />
+			</column>
+			<column name="category" type="string" length="800" decimal="0" jt="12" mandatory="y" />
+			<column name="__v" type="int" length="800" decimal="0" jt="4" mandatory="y" />
+			<index name="_id_" unique="PRIMARY_KEY" >
+				<column name="_id" />
+			</index>
+			<fk name="Relationship" virtual="y" to_schema="recettes" to_table="users" >
+				<fk_column name="comments.user" pk="_id" />
+			</fk>
+		</table>
+		<table name="users" virtual="y" >
+			<column name="_id" type="objectId" length="800" decimal="0" jt="-8" mandatory="y" />
+			<column name="username" type="string" length="800" decimal="0" jt="12" mandatory="y" />
+			<column name="email" type="string" length="800" decimal="0" jt="12" mandatory="y" />
+			<column name="password" type="string" length="800" decimal="0" jt="12" mandatory="y" />
+			<column name="role" type="string" length="800" decimal="0" jt="12" mandatory="y" />
+			<column name="__v" type="int" length="800" decimal="0" jt="4" mandatory="y" />
+			<index name="_id_" unique="PRIMARY_KEY" >
+				<column name="_id" />
+			</index>
+			<index name="username_1" unique="UNIQUE_KEY" >
+				<column name="username" />
+			</index>
+			<index name="email_1" unique="UNIQUE_KEY" >
+				<column name="email" />
+			</index>
+		</table>
+	</schema>
+	<layout name="Main Layout" id="Layout-20bf" show_relation="name" >
+		<entity schema="recettes" name="recipes" column="comments" color="BED3F4" x="176" y="480" />
+		<entity schema="recettes" name="ingredients" color="C7F4BE" x="400" y="224" />
+		<entity schema="recettes" name="recipes" column="ingredients" color="BED3F4" x="48" y="480" />
+		<entity schema="recettes" name="ingredients" column="nutritionInfo" color="C7F4BE" x="416" y="384" />
+		<entity schema="recettes" name="recipes" color="BED3F4" x="96" y="224" />
+		<entity schema="recettes" name="users" color="F4DDBE" x="416" y="544" />
+		<callout x="96" y="80" pointer="Round" >
+			<comment><![CDATA[This is a layout. You can create multiple layouts with the same or different collections. 
+
+
+- Edit collections and validation rules by double-clicking the collection headers.]]></comment>
+		</callout>
+		<group name="Collection &#039;users&#039;" color="F7F2EC" >
+			<entity schema="recettes" name="users" />
+		</group>
+		<group name="Collection &#039;ingredients&#039;" color="EEF7EC" >
+			<entity schema="recettes" name="ingredients" column="nutritionInfo" />
+			<entity schema="recettes" name="ingredients" />
+		</group>
+		<group name="Collection &#039;comments&#039;" color="ECF0F7" >
+			<entity schema="recettes" name="recipes" column="comments" />
+			<entity schema="recettes" name="recipes" />
+			<entity schema="recettes" name="recipes" column="ingredients" />
+		</group>
+	</layout>
+	<layout name="~Layout with Sample Tools" id="Layout-d62" show_column_type="y" show_relation="name" >
+		<entity schema="recettes" name="recipes" column="comments" color="BED3F4" x="208" y="336" />
+		<entity schema="recettes" name="ingredients" color="C7F4BE" x="448" y="80" />
+		<entity schema="recettes" name="recipes" column="ingredients" color="BED3F4" x="48" y="336" />
+		<entity schema="recettes" name="ingredients" column="nutritionInfo" color="C7F4BE" x="464" y="240" />
+		<entity schema="recettes" name="recipes" color="BED3F4" x="96" y="80" />
+		<entity schema="recettes" name="users" color="F4DDBE" x="448" y="592" />
+		<group name="users" color="F7F2EC" >
+			<entity schema="recettes" name="users" />
+		</group>
+		<group name="ingredients" color="EEF7EC" >
+			<entity schema="recettes" name="ingredients" />
+			<entity schema="recettes" name="ingredients" column="nutritionInfo" />
+		</group>
+		<group name="comments" color="ECF0F7" >
+			<entity schema="recettes" name="recipes" column="comments" />
+			<entity schema="recettes" name="recipes" />
+			<entity schema="recettes" name="recipes" column="ingredients" />
+		</group>
+		<script name="Query Editor" id="Editor-12ba" language="SQL" >
+			<string><![CDATA[recettes.recipes.find()
+
+//OR
+
+USE recettes;
+db.recipes.find()
+
+//OR
+
+USE recettes;
+db.getCollection('recipes').find()]]></string>
+		</script>
+		<browser id="Browse-457" name="Relational Data Explorer" confirm_updates="y" >
+			<browse_table schema="recettes" entity="recipes" x="-2147483648" y="-2147483648" width="-2147483648" height="-2147483648" record_view="y" >
+				<browse_table schema="recettes" entity="users" fk="Relationship" x="40" y="-2147483648" width="500" height="350" record_view="y" />
+			</browse_table>
+		</browser>
+		<query id="Query-1547" name="Query Builder" >
+			<query_table schema="recettes" name="recipes" alias="recipes" x="48" y="48" >
+				<column name="_id" />
+				<column name="title" />
+				<column name="description" />
+				<column name="ingredients" />
+				<column name="steps" />
+				<column name="prepTime" />
+				<column name="images" />
+				<column name="comments" />
+				<column name="category" />
+				<column name="__v" />
+				<query_table schema="recettes" name="users" alias="users" x="240" y="48" fk="Relationship" type="Inner Join" >
+					<column name="_id" />
+					<column name="username" />
+					<column name="email" />
+					<column name="password" />
+					<column name="role" />
+					<column name="__v" />
+				</query_table>
+			</query_table>
+		</query>
+		<form name="Report" id="Report-2464" template="Page" css="container-fluid" view="frame" >
+			<var name="samplePageNumber" type="4" value="0" mandatory="n" />
+			<var name="sampleRecordsPerPage" type="4" value="100" mandatory="n" />
+			<body name="Body" template="Grid" max_records="100" pos="0,0,0,0,f,f" layout="{{-2,-2,-2,-2,-1},{-2,-2,-2,-2}}" scroll="n" html="n" >
+				<cell type="label" name="Recipes Data" template="H3" pos="0,0,1,0,l,c" />
+				<cell type="chart" name="Pie" template="Pie" pos="0,1,4,1,l,c" max_records="20" >
+					<form_script type="DataSource" language="SQL" >
+						<var name="_id" type="-8" />
+						<var name="title" />
+						<var name="description" />
+						<var name="ingredients" type="4999544" />
+						<var name="steps" type="2003" />
+						<var name="prepTime" type="4" />
+						<var name="images" type="2003" />
+						<var name="comments" type="4999544" />
+						<var name="category" />
+						<var name="__v" type="4" />
+						<script ><![CDATA[recettes.recipes.find()]]></script>
+					</form_script>
+					<param name="item" value="category" />
+					<param name="width" value="100%" />
+					<param name="title" value="Sample Chart" />
+					<param name="value" value="__v" />
+					<param name="height" value="400px" />
+				</cell>
+				<tableview name="sample" template="Table" max_records="100" css="sortable table table-striped table-sm table-hover" pos="0,2,4,2,f,f" layout="{{-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2},{-2,-2}}" scroll="n" html="n" header_rows="1" >
+					<form_script type="DataSource" language="SQL" >
+						<var name="_id" type="-8" />
+						<var name="title" />
+						<var name="description" />
+						<var name="ingredients" type="4999544" />
+						<var name="steps" type="2003" />
+						<var name="prepTime" type="4" />
+						<var name="images" type="2003" />
+						<var name="comments" type="4999544" />
+						<var name="category" />
+						<var name="__v" type="4" />
+						<script ><![CDATA[recettes.recipes.find()]]></script>
+					</form_script>
+					<cell type="label" name="_id" pos="0,0,0,0,c,c" />
+					<cell type="label" name="title" pos="1,0,1,0,c,c" />
+					<cell type="label" name="description" pos="2,0,2,0,c,c" />
+					<cell type="label" name="ingredients" pos="3,0,3,0,c,c" />
+					<cell type="label" name="steps" pos="4,0,4,0,c,c" />
+					<cell type="label" name="prepTime" pos="5,0,5,0,c,c" />
+					<cell type="label" name="images" pos="6,0,6,0,c,c" />
+					<cell type="label" name="comments" pos="7,0,7,0,c,c" />
+					<cell type="label" name="category" pos="8,0,8,0,c,c" />
+					<cell type="label" name="__v" pos="9,0,9,0,c,c" />
+					<cell type="label" name="${_id}" template="Plain" pos="0,1,0,1,l,c" />
+					<cell type="label" name="${title}" template="Plain" pos="1,1,1,1,l,c" />
+					<cell type="label" name="${description}" template="Plain" pos="2,1,2,1,l,c" />
+					<cell type="label" name="${ingredients}" template="Plain" pos="3,1,3,1,l,c" />
+					<cell type="label" name="${steps}" template="Plain" pos="4,1,4,1,l,c" />
+					<cell type="label" name="${prepTime}" template="Plain" pos="5,1,5,1,l,c" />
+					<cell type="label" name="${images}" template="Plain" pos="6,1,6,1,l,c" />
+					<cell type="label" name="${comments}" template="Plain" pos="7,1,7,1,l,c" />
+					<cell type="label" name="${category}" template="Plain" pos="8,1,8,1,l,c" />
+					<cell type="label" name="${__v}" template="Plain" pos="9,1,9,1,l,c" />
+					<cell type="button" name="More" template="Plain" css="btn btn-sm btn-secondary" pos="10,1,10,1,c,c" ref_id="Report-2464" />
+				</tableview>
+				<cell type="href" name="" disabled="${samplePageNumber&lt;1}" pos="0,3,0,3,l,c" glyph="bi-chevron_double_left" ref_id="Report-2464" >
+					<var name="samplePageNumber" value="0" />
+				</cell>
+				<cell type="href" name="" disabled="${samplePageNumber&lt;1}" pos="1,3,1,3,l,c" glyph="bi-chevron_left" ref_id="Report-2464" >
+					<var name="samplePageNumber" value="${Math.max(0,samplePageNumber-1)}" />
+				</cell>
+				<cell type="label" name="Page ${samplePageNumber+1}" pos="2,3,2,3,l,c" />
+				<cell type="href" name="" disabled="${!sampleHasNextPage}" pos="3,3,3,3,l,c" glyph="bi-chevron_right" ref_id="Report-2464" >
+					<var name="samplePageNumber" value="${( samplePageNumber+1 )}" />
+				</cell>
+			</body>
+		</form>
+	</layout>
+</project>
