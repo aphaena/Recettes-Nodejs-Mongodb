@@ -9,6 +9,9 @@ dotenv.config({ path: './config.env' });
 const authRoutes = require('./routes/authRoutes');
 const recipeRoutes = require('./routes/recipeRoutes');
 const ingredientRoutes = require('./routes/ingredientRoutes');
+const commentsRoutes = require('./routes/commentRoutes');
+const categoryRoutes = require('./routes/categoryRoutes');
+const imageRoutes = require('./routes/imageRoutes');
 
 const app = express();
 
@@ -19,6 +22,9 @@ app.use(cors({
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/recipes', recipeRoutes);
 app.use('/api/v1/ingredients', ingredientRoutes);
+app.use('/api/v1/recipes', commentsRoutes);
+app.use('/api/v1/recipes', categoryRoutes);
+app.use('/api/v1/recipes', imageRoutes);
 
 // Gestion des erreurs globales ici
 

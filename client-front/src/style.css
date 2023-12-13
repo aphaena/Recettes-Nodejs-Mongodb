@@ -108,6 +108,8 @@ body {
     padding: 10px;
     margin-bottom: 10px;
     border-radius: 4px;
+    display: flex ;
+    justify-content: space-around;
   }
 
   a {

@@ -2,6 +2,13 @@
 
 const mongoose = require('mongoose');
 
+const commentSchema = new mongoose.Schema({
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  text: String,
+  rating: Number,
+  createdAt: Date
+});
+
 const recipeSchema = new mongoose.Schema({
   title: { type: String, required: true },
   description: String,
@@ -15,17 +22,10 @@ const recipeSchema = new mongoose.Schema({
   steps: [String],
   prepTime: Number,
   images: [String],
-  comments: {
-    user: { type: mongoose.Schema.ObjectId, ref: 'User' },
-    text: String,
-    rating: Number,
-    createdAt: { type: Date, default: Date.now }
-  },
-  category: {
-    type: String,
-    required: true
-    //enum: ['vegetarian', 'dessert', 'quick', 'etc'],
-  },
+  comments: [commentSchema],
+  category: [String],
+   // required: true
+   
   // Ajoutez d'autres champs nécessaires ici
 });
 

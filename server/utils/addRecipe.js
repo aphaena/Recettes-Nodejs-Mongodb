@@ -24,13 +24,13 @@ const recipes = [
     steps: ['Couper les tomates', 'Cuire les tomates'],
     prepTime: 30,
     images: ['image1.jpg', 'image2.jpg'],
-    comments: {
+    comments:[ {
       user: '65719f72a85ab5047e72a3eb', // Remplacez par un ObjectId valide
-      text: 'Super recette !',
+      text: 'Super mega recette !',
       rating: 5,
       createdAt: new Date()
-    },
-    category: 'vegetarian'
+    }],
+    category: [ 'vegetarian', 'salad']
   },
   {
     title: 'Salade César',
@@ -39,13 +39,21 @@ const recipes = [
     steps: ['Déchirer la laitue en morceaux', 'Ajouter des croûtons et du parmesan', 'Arroser de sauce César'],
     prepTime: 20,
     images: ['salade-cesar.jpg'],
-    comments: {
-      user: '65719f72a85ab5047e72a3eb', // Remplacez par un ObjectId valide
-      text: 'Un classique toujours apprécié !',
-      rating: 5,
-      createdAt: new Date()
-    },
-    category: 'quick'
+    comments: [ 
+      {
+        user: '65719f72a85ab5047e72a3eb', // Remplacez par un ObjectId valide
+        text: 'Le top chef !',
+        rating: 5,
+        createdAt: new Date()
+      },
+      {
+        user: '65719f72a85ab5047e72a3eb', // Remplacez par un ObjectId valide
+        text: 'Le top du top  !',
+        rating: 6,
+        createdAt: new Date()
+      }
+    ],
+    category: [ 'quick', 'rapide']
   },
   {
     title: 'Gâteau au Chocolat',
@@ -54,13 +62,21 @@ const recipes = [
     steps: ['Faire fondre le chocolat', 'Mélanger avec du beurre et du sucre', 'Ajouter des œufs et de la farine', 'Cuire au four'],
     prepTime: 60,
     images: ['gateau-chocolat.jpg'],
-    comments: {
+    comments: [ 
+    {
       user: '65719f72a85ab5047e72a3eb', // Remplacez par un ObjectId valide
       text: 'Le meilleur gâteau au chocolat !',
       rating: 5,
       createdAt: new Date()
     },
-    category: 'dessert'
+    {
+      user: '65719f72a85ab5047e72a3eb', // Remplacez par un ObjectId valide
+      text: 'Le plus de chocolat !',
+      rating: 6,
+      createdAt: new Date()
+    }
+  ],
+    category: [ 'dessert', 'chocolat']
   }
   
 

@@ -3,20 +3,24 @@ import Navigation from '../Navigation.jsx'; // Assurez-vous que le chemin est co
 
 const RecipesManager = () => {
   const [recipes, setRecipes] = useState([]);
-  const [categories, setCategories] = useState([]); // Ajout de l'état pour les catégories
-  const [newCategory, setNewCategory] = useState(''); 
-  const [newRecipe, setNewRecipe] = useState({ title: '', description: '', steps: '', prepTime: 0, category: '' });
+  
+
+  const [newRecipe, setNewRecipe] = useState({ title: '', description: '', steps: '', prepTime: 0, categories: [] });
   const [editRecipeId, setEditRecipeId] = useState(null);
   const [editRecipe, setEditRecipe] = useState({});
   const [editNewCategory, setEditNewCategory] = useState('');
   const [ingredients, setIngredients] = useState([]);
   const [selectedIngredients, setSelectedIngredients] = useState([]); 
 
+  const [categories, setCategories] = useState([]); // Ajout de l'état pour les catégories
+  const [newCategory, setNewCategory] = useState(''); 
+  const [selectedCategory, setSelectedCategory] = useState('');
+
   const APIURL = import.meta.env.VITE_APP_API_URL;
 
   useEffect(() => {
     fetchRecipes();
-    fetchIngredients(); 
+    fetchIngredients();      
   }, []);
 
   const fetchRecipes = async () => {
@@ -25,8 +29,19 @@ const RecipesManager = () => {
       const data = await response.json();
       if (data && data.data && data.data.recipes) {
         setRecipes(data.data.recipes);
-        const extractedCategories = new Set(data.data.recipes.map(recipe => recipe.category));
-        setCategories([...extractedCategories]);
+        //const extractedCategories = new Set(data.data.recipes.map(recipe => recipe.category));
+         // Extraire toutes les catégories de toutes les recettes
+         const allCategories = data.data.recipes.reduce((acc, recipe) => {
+          recipe.category.forEach(category => {
+            if (!acc.includes(category)) {
+              acc.push(category);
+            }
+          });
+          return acc;
+        }, []);
+
+      // Mettre à jour l'état des catégories avec les catégories uniques
+      setCategories(allCategories);
       } else {
         console.error('Données de recettes non trouvées dans la réponse');
       }
@@ -50,6 +65,8 @@ const RecipesManager = () => {
     }
   };
 
+
+
   const handleInputChange = (e, isEdit = false) => {
     const { name, value } = e.target;
     if (isEdit) {
@@ -58,6 +75,14 @@ const RecipesManager = () => {
       setNewRecipe(prev => ({ ...prev, [name]: value }));
     }
   };
+
+ // Fonction pour gérer la sélection d'un ingrédient
+ const handleIngredientSelect = (e) => {
+  const selectedIngredientId = e.target.value;
+  if (!selectedIngredients.includes(selectedIngredientId)) {
+    setSelectedIngredients([...selectedIngredients, selectedIngredientId]);
+  }
+};
 
   const handleEditCategoryChange = (e) => {
     const selectedCategory = e.target.value;
@@ -69,66 +94,123 @@ const RecipesManager = () => {
       setEditNewCategory(''); // Effacer editNewCategory si une catégorie existante est sélectionnée
     }
   };
-  
+
   const handleEditNewCategoryChange = (e) => {
     setEditNewCategory(e.target.value);
   };
 
-  const handleCategoryChange = (e) => {
-    const selectedCategory = e.target.value;
-    setNewRecipe(prev => ({ ...prev, category: selectedCategory }));
+  const cancelEdit = () => {
+    setEditRecipe(null);
   };
+  
 
-  const handleNewCategoryChange = (e) => {
-    setNewCategory(e.target.value);
+
+  // const handleCategorySelectChange = (e) => {
+  //   const value = e.target.value;
+  //   console.log("Catégorie sélectionnée:", value);
+  //   setSelectedCategory(value);
+  //   if (value === 'other') {
+  //     setNewCategory('');
+  //   }
+  // };
+
+  const handleCategorySelectChange = (e) => {
+    const value = e.target.value;
+    setSelectedCategory(value);
+    if (value !== 'other') {
+      addSelectedCategory(value);
+    }
   };
-
-  const handleIngredientSelect = (e) => {
-    const selectedIngredientId = e.target.value;
-    if (!selectedIngredients.includes(selectedIngredientId)) {
-      setSelectedIngredients([...selectedIngredients, selectedIngredientId]);
+  
+  const addSelectedCategory = (category) => {
+    if (category && !newRecipe.categories.includes(category)) {
+      setNewRecipe(prev => ({
+        ...prev,
+        categories: [...prev.categories, category]
+      }));
+    }
+  };
+  
+  const handleAddNewCategory = () => {
+    if (newCategory && !newRecipe.categories.includes(newCategory)) {
+      setNewRecipe(prev => ({
+        ...prev,
+        categories: [...prev.categories, newCategory]
+      }));
+      setNewCategory('');
     }
   };
 
+  // Fonction pour afficher les catégories sélectionnées
+  const renderSelectedCategories = () => {
+    return newRecipe.categories.map((category, index) => (
+      <li key={index}>{category}</li>
+    ));
+  };
+
+
   const addRecipe = async () => {
     try {
-      const recipeData = { ...newRecipe,
+      // Vérifier si les champs requis sont remplis
+      if (!newRecipe.title || !newRecipe.description || !newRecipe.steps || newRecipe.prepTime === 0) {
+        console.error("Tous les champs requis doivent être remplis.");
+        return;
+      }
+  
+      // Déterminer les catégories à envoyer
+      let categoriesToSend;
+      if (selectedCategory === 'other' && newCategory) {
+        categoriesToSend = [newCategory];
+      } else if (selectedCategory && selectedCategory !== 'other') {
+        categoriesToSend = [selectedCategory];
+      } else {
+        console.error("Catégorie non spécifiée.");
+        return;
+      }
+  
+      // Préparer les données de la recette
+      const recipeData = { ...newRecipe, categories: categoriesToSend, 
         ingredients: selectedIngredients.map(id => ({ ingredient: id, quantity: '1' })) 
       };
-      if (recipeData.category === 'other') {
-        recipeData.category = newCategory;
-        if (newCategory && !categories.includes(newCategory)) {
-          setCategories([...categories, newCategory]);
-        }
-      }
-      console.log("Envoi de la recette:", recipeData);
-
+  
+      // Envoyer la requête
       const response = await fetch(`${APIURL}/api/v1/recipes/recipe`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(recipeData)
       });
+  
       if (response.ok) {
         fetchRecipes();
-        setNewRecipe({ title: '', description: '', steps: '', prepTime: 0, category: '' });
+        setNewRecipe({ title: '', description: '', steps: '', prepTime: 0, categories: [] });
         setSelectedIngredients([]);
         setNewCategory('');
-      }
-      if (!response.ok) {
+      } else {
         const errorData = await response.json();
         console.error('Erreur lors de l\'ajout de la recette:', errorData);
-        return;
       }
     } catch (error) {
       console.error('Erreur lors de l\'ajout de la recette:', error);
     }
   };
+  
 
   const startEdit = (recipe) => {
     setEditRecipeId(recipe._id);
     setEditRecipe({ ...recipe });
     const recipeIngredientIds  = recipe.ingredients.map(ing => ing.ingredient._id);
     setSelectedIngredients(recipeIngredientIds );
+  };
+
+  // Fonction pour ajouter une nouvelle catégorie
+  const addCategory = () => {
+    if (newCategory && !newRecipe.categories.includes(newCategory)) {
+      setNewRecipe(prev => ({
+        ...prev,
+        categories: [...prev.categories, newCategory]
+      }));
+      setNewCategory('');
+    }
   };
 
   const editRecipeSubmit = async () => {
@@ -142,10 +224,10 @@ const RecipesManager = () => {
       }
   
       // Assurez-vous que la catégorie est définie
-      if (!recipeData.category) {
-        console.error("La catégorie est requise.");
-        return;
-      }
+      // if (!recipeData.category) {
+      //   console.error("La catégorie est requise.");
+      //   return;
+      // }
   
       const response = await fetch(`${APIURL}/api/v1/recipes/recipe/${editRecipeId}`, {
         method: 'PATCH',
@@ -182,7 +264,6 @@ const RecipesManager = () => {
     }
   };
 
- 
 
 
   return (
@@ -191,6 +272,7 @@ const RecipesManager = () => {
       <Navigation />    
       </div>
       <h2>Gestion des Recettes</h2>
+      {!editRecipeId && (
       <div>
         <input
           type="text"
@@ -230,16 +312,51 @@ const RecipesManager = () => {
             <li key={id}>{ingredients.find(ingredient => ingredient._id === id)?.name || id}</li>
           ))}
         </ul>
-       <label htmlFor="category">Catégorie :</label>
-        <select name="category" value={newRecipe.category} onChange={handleCategoryChange}>
-          {categories.map(category => <option key={category} value={category}>{category}</option>)}
-          <option value="other">Autre</option>
-        </select>
-        {newRecipe.category === 'other' && (
-          <input type="text" value={newCategory} onChange={handleNewCategoryChange} placeholder="Nouvelle catégorie" />
-        )}
+{/*      
+        <label htmlFor="category">Catégorie :</label>
+        <select name="category" value={selectedCategory} onChange={handleCategorySelectChange}>
+        {categories.map(category => <option key={category} value={category}>{category}</option>)}
+        <option value="other">Autre</option>
+      </select>
+    {selectedCategory  === 'other' && (
+      <div>
+    <input 
+      type="text" 
+      value={newCategory} 
+      onChange={(e) => setNewCategory(e.target.value)} 
+      placeholder="Nouvelle catégorie" />    
+      <ul>{renderSelectedCategories()}</ul>
+    <button onClick={addSelectedCategory}>Ajouter Catégorie</button>
+    </div>
+    )} */}
+
+<select name="category" value={selectedCategory} onChange={handleCategorySelectChange}>
+  {categories.map(category => <option key={category} value={category}>{category}</option>)}
+  <option value="other">Autre</option>
+</select>
+{selectedCategory === 'other' && (
+  <div>
+    <input 
+      type="text" 
+      value={newCategory} 
+      onChange={(e) => setNewCategory(e.target.value)} 
+      placeholder="Nouvelle catégorie" 
+    />
+    <button onClick={handleAddNewCategory}>Ajouter Catégorie</button>
+  </div>
+)}
+     
+     
+
+  {/* Afficher les catégories existantes */}
+  <ul>
+    {newRecipe.categories.map((category, index) => (
+      <li key={index}>{category}</li>
+    ))}
+  </ul>
         <button onClick={addRecipe}>Ajouter une recette</button>
       </div>
+      )}
       {editRecipeId && (
         <div>
           <input
@@ -281,15 +398,21 @@ const RecipesManager = () => {
             return <li key={id}>{ingredient ? ingredient.name : id}</li>;
           })}
         </ul>
-        <label htmlFor="editCategory">Catégorie :</label>
-        <select name="category" value={editRecipe.category === 'other' ? 'other' : editRecipe.category} onChange={handleEditCategoryChange}>
+        <label htmlFor="category">Catégorie :</label>
+        <select name="category" value={selectedCategory} onChange={handleCategorySelectChange}>
           {categories.map(category => <option key={category} value={category}>{category}</option>)}
           <option value="other">Autre</option>
         </select>
-        {editRecipe.category === 'other' && (
-          <input type="text" value={editNewCategory} onChange={handleEditNewCategoryChange} placeholder="Nouvelle catégorie" />
+        {selectedCategory === 'other' && (
+          <input 
+            type="text" 
+            value={newCategory} 
+            onChange={(e) => setNewCategory(e.target.value)} 
+            placeholder="Nouvelle catégorie" 
+          />
         )}
           <button onClick={editRecipeSubmit}>Modifier la recette</button>
+          <button onClick={cancelEdit}>Annuler la modification</button>
         </div>
                 
       )}

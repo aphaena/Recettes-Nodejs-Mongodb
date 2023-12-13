@@ -1,0 +1,42 @@
+###
+# List all comments for a specific recipe
+# GET http://localhost:3000/api/v1/recipes/{recipeId}/comments
+GET http://localhost:3000/api/v1/recipes/65786fcffc0fa8fd67dc04b3/comments
+Content-Type: application/json
+
+###
+# Add a comment to a specific recipe
+# POST http://localhost:3000/api/v1/recipes/{recipeId}/comments
+POST http://localhost:3000/api/v1/recipes/65786fcffc0fa8fd67dc04b3/comments
+Content-Type: application/json
+Authorization: Bearer {Your_Auth_Token}
+
+{
+  "user": "65719f72a85ab5047e72a3eb",
+  "text": "This is a great recipe!",
+  "rating": 5
+}
+
+
+###
+# Update a comment on a specific recipe
+# PUT http://localhost:3000/api/v1/recipes/{recipeId}/comments/{commentId}
+PUT http://localhost:3000/api/v1/recipes/65786fcffc0fa8fd67dc04b3/comments/65786fcffc0fa8fd67dc04b6
+Content-Type: application/json
+Authorization: Bearer {Your_Auth_Token}
+
+{
+  "text": "Updated comment text",
+  "rating": 4
+}
+
+###
+
+###
+# Delete a comment from a specific recipe
+DELETE http://localhost:3000/api/v1/recipes/{recipeId}/comments/{commentId}
+Content-Type: application/json
+Authorization: Bearer {Your_Auth_Token}
+
+###
+

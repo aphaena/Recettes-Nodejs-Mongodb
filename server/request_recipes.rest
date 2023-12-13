@@ -1,44 +1,3 @@
-###
-POST http://localhost:3000/api/v1/auth/signup
-Content-Type: application/json
-
-{
-  "username": "admin",
-  "email": "admin@example.com",
-  "password": "admin",
-  "role": "admin" 
-}
-
-###
-POST http://localhost:3000/api/v1/auth/login
-Content-Type: application/json
-
-{
-  "email": "admin@example.com", 
-  "password": "admin"
-}
-
-###
-GET  http://localhost:3000/api/v1/ingredients
-Content-Type: application/json
-
-###
-GET  http://localhost:3000/api/v1/ingredients/ingredient/6573158a027ed738bd0e1010
-Content-Type: application/json
-
-###
-POST http://localhost:3000/api/v1/ingredients/ingredient
-Content-Type: application/json
-
-{
-  "name": "Farine de blé",
-  "quantite": 100,
-  "nutritionInfo": {
-    "calories": 364,
-    "protein": 10,
-    "fat": 1
-  }
-}
 
 ###
 GET  http://localhost:3000/api/v1/recipes
@@ -53,8 +12,8 @@ POST http://localhost:3000/api/v1/recipes/recipe
 Content-Type: application/json
 
 {
-  "title": "Gâteau au chocolat",
-  "description": "Un délicieux gâteau au chocolat moelleux et riche.",
+  "title": "Gâteau au Kaki",
+  "description": "Un délicieux gâteau au Kaki étrange et riche.",
    "ingredients": [
     {
       "ingredient": "6573158a027ed738bd0e1010",
@@ -67,7 +26,7 @@ Content-Type: application/json
   ],
   "steps": [
     "Préchauffer le four à 180°C.",
-    "Faire fondre le chocolat et le beurre.",
+    "Faire fondre le Kaki et le beurre.",
     "Ajouter le sucre et les œufs, puis incorporer la farine.",
     "Verser la pâte dans un moule et cuire pendant 25 minutes."
   ],
@@ -75,13 +34,21 @@ Content-Type: application/json
   "images": [
     "url_image_gateau_chocolat.jpg"
   ],
-  "comments": {
+  "comments": [
+    {
     "user": "65719f72a85ab5047e72a3eb",
-    "text": "Meilleur gâteau au chocolat que j'ai jamais fait !",
+    "text": "Meilleur gâteau au Kaki de la planète !",
     "rating": 5,
     "createdAt": "2023-12-06T00:00:00.000Z"
-  },
-  "category": "dessert"
+    }, 
+    {
+    "user": "65719f72a85ab5047e72a3eb",
+    "text": "Meilleur gâteau que j'ai jamais fait !",
+    "rating": 5,
+    "createdAt": "2023-12-06T00:00:00.000Z"
+    }
+  ],
+  "category":  [ "dessert", "fruit" ]
 }
 
 

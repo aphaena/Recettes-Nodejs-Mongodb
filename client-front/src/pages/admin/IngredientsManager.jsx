@@ -82,6 +82,10 @@ const IngredientsManager = () => {
     setEditIngredient(ingredient);
   };
 
+  const cancelEdit = () => {
+    setEditIngredient(null);
+  };
+
   const editIngredientSubmit = async () => {
     try {
       const response = await fetch(`${APIURL}/api/v1/ingredients/ingredient/${editIngredient._id}`, {
@@ -117,8 +121,10 @@ const IngredientsManager = () => {
       <div>
       <Navigation />    
       </div>
-      <h2>Gestion des Ingrédients</h2>              
+      <h2>Gestion des Ingrédients</h2>  
+      {!editIngredient && (            
       <div>
+    
         <input
           type="text"
           name="name"
@@ -126,7 +132,7 @@ const IngredientsManager = () => {
           onChange={(e) => handleInputChange(e)}
           placeholder="Nom de l'ingrédient"
         />
-        {/* Ajoutez des champs pour quantité, calories, protéines, et graisses ici */}
+       
         <input
           type="text"
           name="quantite"
@@ -156,7 +162,9 @@ const IngredientsManager = () => {
           placeholder="Graisses"
         />
         <button onClick={addIngredient}>Ajouter</button>
+       
       </div>
+      )}
       {editIngredient && (
         <div>
           <input
@@ -196,6 +204,7 @@ const IngredientsManager = () => {
             placeholder="Graisses"
           />
           <button onClick={editIngredientSubmit}>Modifier</button>
+          <button onClick={cancelEdit}>Annuler la modification</button>
         </div>
       )}
         <ul>

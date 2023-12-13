@@ -1,0 +1,18 @@
+###
+# List all categories in all recipes 
+GET http://localhost:3000/api/v1/recipes/categories
+Content-Type: application/json
+
+###
+# List all categories in a recipes 
+GET http://localhost:3000/api/v1/recipes/657899855dcdd31f040f2ea8/categories
+Content-Type: application/json
+
+###
+# add a category in a recipes 
+POST http://localhost:3000/api/v1/recipes/6578d0a45dcdd31f040f3312/category
+Content-Type: application/json
+
+{
+    "category": "toto"
+}

@@ -4,7 +4,14 @@ const Recipe = require('../models/recipeModel');
 // Ajouter une nouvelle recette
 exports.addRecipe = async (req, res) => {
   try {
-    const newRecipe = await Recipe.create(req.body);
+
+    const newRecipeData = {
+      ...req.body,
+      categories: Array.isArray(req.body.categories) ? req.body.categories : [req.body.categories],
+      comments: Array.isArray(req.body.comments) ? req.body.comments : [req.body.comments],
+    };
+
+    const newRecipe = await Recipe.create(newRecipeData);
     res.status(201).json({
       status: 'success',
       data: {
