@@ -1,0 +1,32 @@
+
+###
+# listing images to a specific recipe
+// GET http://localhost:3000/api/v1/recipes/{recipeId}/images
+GET http://localhost:3000/api/v1/recipes/65786fcffc0fa8fd67dc04a8/images
+
+###
+GET http://localhost:3000/api/v1/recipes/all-images
+
+
+###
+# Add an image to a specific recipe
+POST http://localhost:3000/api/v1/recipes/{recipeId}/images
+Content-Type: application/json
+
+{
+    "imageUrl": "/images/path-to-your-image.jpg"
+}
+
+###
+# Add an image to a specific recipe
+PUT http://localhost:3000/api/v1/recipes/{recipeId}/images
+Content-Type: application/json
+
+{
+    "imageUrl": "/images/path-to-your-image.jpg"
+}
+
+###
+# Delete an image from a specific recipe
+DELETE http://localhost:3000/api/v1/recipes/{recipeId}/images/{imageIndex}
+Content-Type: application/json

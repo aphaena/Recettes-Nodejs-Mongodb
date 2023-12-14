@@ -1,0 +1,61 @@
+###
+POST http://localhost:3000/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com", 
+  "password": "admin"
+}
+
+###
+POST http://localhost:3000/api/v1/auth/signup
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "email": "admin@example.com",
+  "password": "admin",
+  "role": "admin" 
+}
+
+
+
+###
+# Create a new user
+POST http://localhost:3000/api/v1/users
+Content-Type: application/json
+
+{
+    "username": "newUser",
+    "email": "newuser@example.com",
+    "password": "password123",
+    "role": "user"
+}
+###
+
+###
+# Get a specific user
+GET http://localhost:3000/api/v1/users/{userId}
+Content-Type: application/json
+
+
+###
+# Update a specific user
+PATCH http://localhost:3000/api/v1/users/{userId}
+Content-Type: application/json
+
+{
+    "username": "updatedUser",
+    "email": "updateduser@example.com"
+}
+
+
+###
+# Delete a specific user
+DELETE http://localhost:3000/api/v1/users/{userId}
+Content-Type: application/json
+
+
+###
+# list all users
+GET http://localhost:3000/api/v1/users/

@@ -1,3 +1,5 @@
+//controllers/authController.js
+
 const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 
@@ -15,8 +17,6 @@ exports.signup = async (req, res) => {
     },
   });
 };
-
-//controllers/authController.js
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;

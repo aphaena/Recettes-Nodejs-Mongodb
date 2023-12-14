@@ -1,0 +1,47 @@
+
+
+###
+GET  http://localhost:3000/api/v1/ingredients
+Content-Type: application/json
+
+###
+GET  http://localhost:3000/api/v1/ingredients/ingredient/6573158a027ed738bd0e1010
+Content-Type: application/json
+
+###
+POST http://localhost:3000/api/v1/ingredients/ingredient
+Content-Type: application/json
+
+{
+  "name": "Farine de blé",
+  "quantite": 100,
+  "nutritionInfo": {
+    "calories": 364,
+    "protein": 10,
+    "fat": 1
+  }
+}
+
+
+###
+# Mettre à jour un ingrédient spécifique
+PATCH http://localhost:3000/api/v1/ingredients/ingredient/{ingredientId}
+Content-Type: application/json
+
+{
+  "name": "Farine de blé mise à jour",
+  "quantite": 150,
+  "nutritionInfo": {
+    "calories": 350,
+    "protein": 11,
+    "fat": 0.8
+  }
+}
+
+
+###
+# Supprimer un ingrédient spécifique
+DELETE http://localhost:3000/api/v1/ingredients/ingredient/{ingredientId}
+Content-Type: application/json
+
+

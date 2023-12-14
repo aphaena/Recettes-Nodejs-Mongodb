@@ -1,7 +1,6 @@
 const Recipe = require('../models/recipeModel');
 
-
-exports.getImagesFromRecipe = async (req, res) => {
+exports.getStepsFromRecipe = async (req, res) => {
     try {
         const { recipeId } = req.params;
 
@@ -13,7 +12,7 @@ exports.getImagesFromRecipe = async (req, res) => {
         res.status(200).json({
             status: 'success',
             data: {
-                images: recipe.images
+                steps: recipe.steps
             }
         });
     } catch (error) {
@@ -22,17 +21,17 @@ exports.getImagesFromRecipe = async (req, res) => {
 };
 
 
-exports.addImageToRecipe = async (req, res) => {
+exports.addStepToRecipe = async (req, res) => {
     try {
         const { recipeId } = req.params;
-        const { imageUrl } = req.body;
+        const { step } = req.body;
 
         const recipe = await Recipe.findById(recipeId);
         if (!recipe) {
             return res.status(404).send('Recipe not found');
         }
 
-        recipe.images.push(imageUrl);
+        recipe.steps.push(step);
         await recipe.save();
 
         res.status(200).json({
@@ -46,21 +45,21 @@ exports.addImageToRecipe = async (req, res) => {
     }
 };
 
-exports.updateImageInRecipe = async (req, res) => {
+exports.updateStepInRecipe = async (req, res) => {
     try {
-        const { recipeId, imageIndex } = req.params;
-        const { newImageUrl } = req.body;
+        const { recipeId, stepIndex } = req.params;
+        const { step } = req.body;
 
         const recipe = await Recipe.findById(recipeId);
         if (!recipe) {
             return res.status(404).send('Recipe not found');
         }
 
-        if (imageIndex < 0 || imageIndex >= recipe.images.length) {
-            return res.status(400).send('Invalid image index');
+        if (stepIndex >= recipe.steps.length) {
+            return res.status(400).send('Invalid step index');
         }
 
-        recipe.images[imageIndex] = newImageUrl;
+        recipe.steps[stepIndex] = step;
         await recipe.save();
 
         res.status(200).json({
@@ -74,51 +73,26 @@ exports.updateImageInRecipe = async (req, res) => {
     }
 };
 
-
-exports.deleteImageFromRecipe = async (req, res) => {
+exports.deleteStepFromRecipe = async (req, res) => {
     try {
-        const { recipeId, imageIndex } = req.params;
+        const { recipeId, stepIndex } = req.params;
 
         const recipe = await Recipe.findById(recipeId);
         if (!recipe) {
             return res.status(404).send('Recipe not found');
         }
 
-        if (imageIndex < 0 || imageIndex >= recipe.images.length) {
-            return res.status(400).send('Invalid image index');
+        if (stepIndex >= recipe.steps.length) {
+            return res.status(400).send('Invalid step index');
         }
 
-        recipe.images.splice(imageIndex, 1);
+        recipe.steps.splice(stepIndex, 1);
         await recipe.save();
 
         res.status(200).json({
             status: 'success',
             data: {
                 recipe
-            }
-        });
-    } catch (error) {
-        res.status(500).send(error.message);
-    }
-};
-
-// Add more functions as needed for other image operations
-
-exports.listAllImages = async (req, res) => {
-    try {
-        // Trouver toutes les recettes
-        const recipes = await Recipe.find({});
-
-        // Collecter toutes les images de toutes les recettes
-        let allImages = [];
-        recipes.forEach(recipe => {
-            allImages = allImages.concat(recipe.images);
-        });
-
-        res.status(200).json({
-            status: 'success',
-            data: {
-                images: allImages
             }
         });
     } catch (error) {
