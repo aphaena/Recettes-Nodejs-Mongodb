@@ -19,18 +19,28 @@ exports.protect = async (req, res, next) => {
     });
   }
 
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const currentUser = await User.findById(decoded.id);
+    console.log("currentUser: "+currentUser);
+    if (!currentUser) {
+      return res.status(401).json({
+        status: 'fail',
+        message: 'The user belonging to this token does no longer exist.'+currentUser,
+      });
+    }
 
-  const currentUser = await User.findById(decoded.id);
-  if (!currentUser) {
+    req.user = currentUser;
+    next();
+
+  } catch (error) {
     return res.status(401).json({
       status: 'fail',
-      message: 'The user belonging to this token does no longer exist.',
+      message: 'Invalid token or token expired',
     });
   }
 
-  req.user = currentUser;
-  next();
+ 
 };
 
 exports.restrictTo = (...roles) => {
