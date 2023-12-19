@@ -5,11 +5,11 @@ const IngredientsManager = () => {
   const [ingredients, setIngredients] = useState([]);
   const [newIngredient, setNewIngredient] = useState({
     name: '',
-    quantite: 0,
+    quantite: '',
     nutritionInfo: {
-      calories: 0,
-      protein: 0,
-      fat: 0
+      calories: '',
+      protein: '',
+      fat: ''
     }
   });
   const [editIngredient, setEditIngredient] = useState(null);
@@ -124,7 +124,7 @@ const IngredientsManager = () => {
       <h2>Gestion des Ingrédients</h2>  
       {!editIngredient && (            
       <div>
-    
+        <label>Nom</label>
         <input
           type="text"
           name="name"
@@ -132,14 +132,15 @@ const IngredientsManager = () => {
           onChange={(e) => handleInputChange(e)}
           placeholder="Nom de l'ingrédient"
         />
-       
+        <label>Quantité</label>
         <input
           type="text"
           name="quantite"
           value={newIngredient.quantite}
           onChange={(e) => handleInputChange(e)}
-          placeholder="Quantité"
+          placeholder="La quantité moyenne en gramme pour une unité"
         />
+         <label>Calories</label>
         <input
           type="text"
           name="calories"
@@ -147,6 +148,7 @@ const IngredientsManager = () => {
           onChange={(e) => handleInputChange(e)}
           placeholder="Calories"
         />
+         <label>Protéines</label>
         <input
           type="text"
           name="protein"
@@ -154,6 +156,7 @@ const IngredientsManager = () => {
           onChange={(e) => handleInputChange(e)}
           placeholder="Protéines"
         />
+         <label>Graisses</label>
         <input
           type="text"
           name="fat"
@@ -167,6 +170,7 @@ const IngredientsManager = () => {
       )}
       {editIngredient && (
         <div>
+           <label>Nom</label>
           <input
             type="text"
             name="name"
@@ -175,31 +179,35 @@ const IngredientsManager = () => {
             placeholder="Modifier le nom de l'ingrédient"
           />
           {/* Ajoutez des champs pour modifier quantité, calories, protéines, et graisses ici */}
+          <label>Quantité</label>
           <input
             type="text"
-            name="quantite"
+            name="Quantité"
             value={editIngredient.quantite}
             onChange={(e) => handleInputChange(e, true)}
             placeholder="Quantité"
           />
+          <label>Calories</label>
           <input
             type="text"
             name="calories"
-            value={editIngredient.calories}
+            value={editIngredient.nutritionInfo.calories}
             onChange={(e) => handleInputChange(e, true)}
             placeholder="Calories"
           />
+           <label>Protéines</label>
           <input
             type="text"
             name="protein"
-            value={editIngredient.protein}
+            value={editIngredient.nutritionInfo.protein}
             onChange={(e) => handleInputChange(e, true)}
             placeholder="Protéines"
           />
+          <label>Graisses</label>
           <input
             type="text"
             name="fat"
-            value={editIngredient.fat}
+            value={editIngredient.nutritionInfo.fat}
             onChange={(e) => handleInputChange(e, true)}
             placeholder="Graisses"
           />

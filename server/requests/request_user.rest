@@ -1,3 +1,4 @@
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NzE5ZjcyYTg1YWI1MDQ3ZTcyYTNlYiIsImlhdCI6MTcwMjYzNjY0MSwiZXhwIjoxNzEwNDEyNjQxfQ.d-i-YfukCQrGvh7JAj8FtXnAgH-YyuK0i0_2tPy4pcg
 ###
 POST http://localhost:3000/api/v1/auth/login
 Content-Type: application/json
@@ -23,12 +24,12 @@ Content-Type: application/json
 ###
 # Create a new user
 POST http://localhost:3000/api/v1/users
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NzE5ZjcyYTg1YWI1MDQ3ZTcyYTNlYiIsImlhdCI6MTcwMjYzNjY0MSwiZXhwIjoxNzEwNDEyNjQxfQ.d-i-YfukCQrGvh7JAj8FtXnAgH-YyuK0i0_2tPy4pcg
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-    "username": "newUser5",
-    "email": "newuse5r@example.com",
+    "username": "newUser6",
+    "email": "newuse6r@example.com",
     "password": "password123",
     "role": "user"
 }

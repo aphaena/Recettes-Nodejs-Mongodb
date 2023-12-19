@@ -16,11 +16,11 @@ Content-Type: application/json
   "description": "Un délicieux gâteau au Kaki étrange et riche.",
    "ingredients": [
     {
-      "ingredient": "6573158a027ed738bd0e1010",
+      "ingredient": "65786e03872a0031c3c1c241",
       "quantity": "200g"
     },
       {
-      "ingredient": "6573158a027ed738bd0e1010",
+      "ingredient": "65786e03872a0031c3c1c242",
       "quantity": "200g"
     }
   ],
