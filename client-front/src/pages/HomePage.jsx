@@ -34,6 +34,9 @@ import { useNavigate } from 'react-router-dom';
               const data = await response.json();
         
               if (response.ok) {
+                // Enregistrer le token dans le localStorage
+                localStorage.setItem('token', data.token);
+                
                 // Gérer la sauvegarde du token, la gestion de l'état d'authentification, etc.
                 console.log('Connexion réussie:', data);
                 navigate('/admin');

@@ -6,6 +6,7 @@ function AdminPage() {
     <div>
       <h1>Page d'Administration</h1>
       <nav>
+      <Link to="users"> Gérer les Users </Link>
         <Link to="ingredients"> Gérer les Ingrédients </Link>
         <Link to="recipes"> Gérer les Recettes </Link>
       </nav>
