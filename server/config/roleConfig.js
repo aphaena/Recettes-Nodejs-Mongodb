@@ -2,6 +2,6 @@
 module.exports = {
     allowedRoles: ['admin', 'user'],
     allowedRolesUser: ['admin'],
-    allowedRolesRecipe: ['admin', 'user'],
-    allowedRolesIngredient: ['admin', 'user']
+    allowedRolesRecipe: ['admin', 'user', 'author'],
+    allowedRolesIngredient: ['admin', 'user', 'author']
   };

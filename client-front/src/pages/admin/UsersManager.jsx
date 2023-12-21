@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Navigation from '../Navigation.jsx'; // Assurez-vous que le chemin est correct
+import Navigation from '../Navigation.jsx'; 
 
 
 const UsersManager = () => {
@@ -117,7 +117,7 @@ const UsersManager = () => {
   };
 
   return (
-    <div>
+    <div className="container">
       <Navigation />
       <h2>Gestion des Utilisateurs</h2>
 

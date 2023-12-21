@@ -375,7 +375,7 @@ const RecipesManager = () => {
   };
 
   return (
-    <div>
+    <div className="container">
       <div>
         <Navigation />
       </div>

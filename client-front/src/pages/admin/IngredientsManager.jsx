@@ -117,7 +117,7 @@ const IngredientsManager = () => {
 
   return (
     
-    <div>
+    <div className="container">
       <div>
       <Navigation />    
       </div>

@@ -39,3 +39,33 @@ exports.login = async (req, res) => {
     token,
   });
 };
+
+exports.verifyToken = (req, res) => {
+  // Récupérer le token du header d'autorisation
+  const token = req.headers.authorization.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({
+      status: 'fail',
+      message: 'No token provided',
+    });
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({
+        status: 'fail',
+        message: 'Invalid token',
+      });
+    }
+
+    // Si le token est valide, renvoyer une réponse positive
+    res.status(200).json({
+      status: 'success',
+      message: 'Token is valid',
+      data: {
+        userId: decoded.id,
+      },
+    });
+  });
+};
