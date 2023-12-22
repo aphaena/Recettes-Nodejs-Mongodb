@@ -6,6 +6,8 @@ Ce fichier README décrit les étapes pour démarrer le serveur et le client de 
 
 Avant de démarrer le serveur et le client, vous devez configurer certaines variables d'environnement. Créez un fichier `.env` dans le dossier du serveur avec les informations suivantes :
 
+installer npm dotenv
+
 DATABASE=mongodb://127.0.0.1:27017/recettes
 JWT_SECRET=maCleSecreteIci
 JWT_EXPIRES_IN=90d
