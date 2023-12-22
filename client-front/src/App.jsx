@@ -7,6 +7,8 @@ import AdminPage from './pages/AdminPage.jsx';
 import IngredientsManager from './pages/admin/IngredientsManager.jsx'; // Assurez-vous que ce composant existe
 import RecipesManager from './pages/admin/RecipesManager.jsx'; // Assurez-vous que ce composant existe
 import UsersManager from './pages/admin/UsersManager.jsx';
+import RecipesDisplay from './pages/RecipesDisplay.jsx';
+import RecipeDetailsDisplay from './pages/RecipeDetailsDisplay.jsx';
 
 
 import './App.css';
@@ -18,6 +20,8 @@ const App = () => {
 
     <Routes>
       <Route path="/" element={<HomePage />} />
+      <Route path="/recettes" element={<RecipesDisplay />} />
+      <Route path="/recipe-details/:recipeId" element={<RecipeDetailsDisplay />} />
 
       <Route path="/admin" element={
         <ProtectedRoute>

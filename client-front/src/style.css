@@ -128,4 +128,20 @@ body {
   #root {
     width: 100%;
   }
+
+  .recipe-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .recipe-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .recipe-title {
+    margin-right: 10px;
+  }
   

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import RecipesDisplay from './RecipesDisplay.jsx';
 
 
 function HomePage() {
@@ -92,6 +93,7 @@ function HomePage() {
   return (
     <div className = "container">
       <h1>Bienvenue sur l'Application Recettes</h1>      
+
       {error && <p className="error">{error}</p>}
 
       {isLoginMode ? (
@@ -120,9 +122,12 @@ function HomePage() {
                   {isLoginMode ? "S'inscrire" : "Se connecter"}
               </button>
             </div>
+            <RecipesDisplay />
 
     </div>
+    
   );
+  
 }
 
 export default HomePage;

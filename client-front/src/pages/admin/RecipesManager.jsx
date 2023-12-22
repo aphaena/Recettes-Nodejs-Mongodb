@@ -11,6 +11,7 @@ const RecipesManager = () => {
   const [editNewCategory, setEditNewCategory] = useState('');
   const [ingredients, setIngredients] = useState([]);
   const [selectedIngredients, setSelectedIngredients] = useState([]);
+  const [selectedIngredientsEdit, setSelectedIngredientsEdit] = useState([]);
 
   const [categories, setCategories] = useState([]); // Ajout de l'état pour les catégories
   const [newCategory, setNewCategory] = useState('');
@@ -108,23 +109,39 @@ const RecipesManager = () => {
 
   const handleIngredientSelect = (e) => {
     const selectedIngredientId = e.target.value;
-    if (editRecipeId) {
-      // En mode édition, mettre à jour editRecipe
-      setEditRecipe(prev => {
-        const updatedIngredients = prev.ingredients ? [...prev.ingredients] : [];
-        if (!updatedIngredients.some(ing => ing.ingredient === selectedIngredientId)) {
-          updatedIngredients.push({ ingredient: selectedIngredientId, quantity: '1' });
-        }
-        return { ...prev, ingredients: updatedIngredients };
-      });
-    } else {
-      // En mode ajout, mettre à jour selectedIngredients
-      if (!selectedIngredients.includes(selectedIngredientId)) {
-        setSelectedIngredients([...selectedIngredients, selectedIngredientId]);
-      }
+    const alreadySelected = selectedIngredients.some(item => item.ingredientId === selectedIngredientId);
+
+    if (!alreadySelected) {
+      setSelectedIngredients([...selectedIngredients, { ingredientId: selectedIngredientId, quantity: '' }]);
     }
   };
 
+  const handleIngredientSelectEdit = (e) => {
+    const selectedIngredientId = e.target.value;
+    console.log("Ingrédient sélectionné:", selectedIngredientId);
+    const alreadySelected = selectedIngredientsEdit.some(item => item.ingredientId === selectedIngredientId);
+
+    if (!alreadySelected) {
+      setSelectedIngredientsEdit([...selectedIngredientsEdit, { ingredientId: selectedIngredientId, quantity: '' }]);
+    }
+  };
+
+  const handleQuantityChange = (ingredientId, quantity) => {
+    setSelectedIngredients(selectedIngredients.map(item =>
+      item.ingredientId === ingredientId ? { ...item, quantity } : item
+    ));
+  };
+
+  // Gestion des changements de quantité pour chaque ingrédient
+  const handleQuantityChangeEdit = (ingredientId, quantity) => {
+    console.log("handleQuantityChangeEdit ingredientId:", ingredientId);
+    console.log("handleQuantityChangeEdit quantity:", quantity);
+    setSelectedIngredients(selectedIngredientsEdit.map(item =>
+      item.ingredientId === ingredientId ? { ...item, quantity } : item
+
+    ));
+    console.log("handleQuantityChangeEdit item:", item);
+  };
 
   const cancelEdit = () => {
     setEditRecipe(null);
@@ -190,6 +207,10 @@ const RecipesManager = () => {
     });
   };
 
+
+
+
+
   // Définition de la fonction asynchrone 'addRecipe'.
   const addRecipe = async () => {
     try {
@@ -216,8 +237,10 @@ const RecipesManager = () => {
       // Préparer les données de la nouvelle recette.
       const recipeData = {
         ...newRecipe, // Copier toutes les propriétés de 'newRecipe'.
-        category: newRecipe.category, // Utiliser les catégories sélectionnées.
-        ingredients: selectedIngredients.map(id => ({ ingredient: id, quantity: '1' })) // Mapper les ingrédients sélectionnés avec leur quantité.
+        ingredients: selectedIngredients.map(item => ({
+          ingredient: item.ingredientId, // Utilisez uniquement l'ObjectId de l'ingrédient
+          quantity: item.quantity
+        }))
       };
 
       console.log("newCategory:", newCategory);
@@ -269,6 +292,7 @@ const RecipesManager = () => {
 
     // Mettre à jour l'état 'selectedIngredients' avec les IDs des ingrédients de la recette.
     setSelectedIngredients(recipeIngredientIds);
+    setSelectedIngredientsEdit(recipeIngredientIds);
 
     // Mettre à jour l'état 'selectedCategory' avec les catégories de la recette.
     setSelectedCategory(recipe.categories);
@@ -293,20 +317,6 @@ const RecipesManager = () => {
       let categoriesToUpdate = selectedCategory === 'other' && newCategory
         ? [...recipeData.category, newCategory]
         : recipeData.category;
-
-      // Ajout de la catégorie sélectionnée si elle n'est pas déjà présente.
-      // if (selectedCategory !== 'other' && selectedCategory && !categoriesToUpdate.includes(selectedCategory)) {
-      //   categoriesToUpdate.push(selectedCategory);
-      // }
-
-      // console.log("selectedCategory: ", selectedCategory);
-
-      // // Ajout de la nouvelle catégorie si 'other' est sélectionné.
-      // if (selectedCategory === 'other' && newCategory) {
-      //   if (!categoriesToUpdate.includes(newCategory)) {
-      //     categoriesToUpdate.push(newCategory);        
-      //   }
-      // }
 
       console.log("newCategory:", newCategory);
       console.log("recipeData.category:", recipeData.category);
@@ -426,10 +436,17 @@ const RecipesManager = () => {
               ))}
             </select>
 
-            {/* Affichage des ingrédients sélectionnés */}
             <ul>
-              {selectedIngredients.map(id => (
-                <li key={id}>{ingredients.find(ingredient => ingredient._id === id)?.name || id}</li>
+              {selectedIngredients.map(item => (
+                <li key={item.ingredientId}>
+                  {ingredients.find(ingredient => ingredient._id === item.ingredientId)?.name || item.ingredientId}
+                  <input
+                    type="number"
+                    value={item.quantity}
+                    onChange={(e) => handleQuantityChange(item.ingredientId, e.target.value)}
+                    placeholder="Quantité (en grammes)"
+                  />
+                </li>
               ))}
             </ul>
           </div>
@@ -509,33 +526,42 @@ const RecipesManager = () => {
           {/* Sélection des ingrédients en mode édition */}
           <div>
             <label htmlFor="ingredient">Ingrédient :</label>
-            <select name="ingredient" onChange={handleIngredientSelect}>
+            <select name="ingredient" onChange={handleIngredientSelectEdit}>
               {ingredients.map(ingredient => (
                 <option key={ingredient._id} value={ingredient._id}>{ingredient.name}</option>
               ))}
             </select>
+          </div>
 
-            {/* Affichage des ingrédients de la recette en cours de modification */}
+          {/* Affichage des ingrédients sélectionnés en mode édition */}
+          <div>
             <ul>
-              {editRecipe && editRecipe.ingredients && editRecipe.ingredients.map(ing => {
-                const ingredient = ingredients.find(ingredient => ingredient._id === ing.ingredient);
-                return ingredient ? <li key={ing.ingredient}>{ingredient.name}</li> : null;
-              })}
+              {selectedIngredientsEdit.map((item, index) => (
+                <li key={index}>
+                  {ingredients.find(ingredient => ingredient._id === item.ingredientId)?.name || item.ingredientId}
+                  <input
+                    type="number"
+                    value={item.quantity}
+                    onChange={(e) => handleQuantityChangeEdit(item.ingredientId, e.target.value)}
+                    placeholder="Quantité (en grammes)"
+                  />
+                </li>
+              ))}
             </ul>
-
-            {/* Affichage des ingrédients sélectionnés en mode édition */}
             <ul>
-              {selectedIngredients.map(id => {
-                const ingredient = ingredients.find(ing => ing._id === id);
+
+              {selectedIngredientsEdit.map((item, index) => {
+                const ingredient = ingredients.find(ing => ing._id === item.ingredientId);
+                console.log(`Ingrédient trouvé pour ID ${item.ingredientId}:`, ingredient);
                 return (
-                  <li key={id}>
+                  <li key={index}>
                     {ingredient ? ingredient.name : 'Ingrédient inconnu'}
-                    {/* Bouton pour supprimer l'ingrédient */}
-                    <button onClick={() => removeIngredient(id)}>Supprimer</button>
+                    {/* Reste du code... */}
                   </li>
                 );
               })}
             </ul>
+
           </div>
 
           {/* Sélection des catégories en mode édition */}
