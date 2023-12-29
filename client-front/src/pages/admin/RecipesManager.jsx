@@ -12,6 +12,7 @@ const RecipesManager = () => {
   const [ingredients, setIngredients] = useState([]);
   const [selectedIngredients, setSelectedIngredients] = useState([]);
   const [selectedIngredientsEdit, setSelectedIngredientsEdit] = useState([]);
+  const [ingredientFilter, setIngredientFilter] = useState('');
 
   const [categories, setCategories] = useState([]); // Ajout de l'état pour les catégories
   const [newCategory, setNewCategory] = useState('');
@@ -112,7 +113,7 @@ const RecipesManager = () => {
     const alreadySelected = selectedIngredients.some(item => item.ingredientId === selectedIngredientId);
 
     if (!alreadySelected) {
-      setSelectedIngredients([...selectedIngredients, { ingredientId: selectedIngredientId, quantity: '' }]);
+      setSelectedIngredients([...selectedIngredients, { ingredientId: selectedIngredientId, quantity: 1 }]);
     }
   };
 
@@ -133,15 +134,15 @@ const RecipesManager = () => {
   };
 
   // Gestion des changements de quantité pour chaque ingrédient
-  const handleQuantityChangeEdit = (ingredientId, quantity) => {
-    console.log("handleQuantityChangeEdit ingredientId:", ingredientId);
-    console.log("handleQuantityChangeEdit quantity:", quantity);
-    setSelectedIngredients(selectedIngredientsEdit.map(item =>
-      item.ingredientId === ingredientId ? { ...item, quantity } : item
-
-    ));
-    console.log("handleQuantityChangeEdit item:", item);
+  const handleQuantityChangeEdit = (ingredientId, newQuantity) => {
+    setSelectedIngredientsEdit(prevIngredients =>
+      prevIngredients.map(item =>
+        item.ingredientId === ingredientId ? { ...item, quantity: newQuantity } : item
+      )
+    );
+    console.log("const handleQuantityChangeEdit: ", handleQuantityChangeEdit);
   };
+
 
   const cancelEdit = () => {
     setEditRecipe(null);
@@ -288,10 +289,14 @@ const RecipesManager = () => {
     // Filtrer et extraire les IDs des ingrédients de la recette qui ne sont pas nuls.
     const recipeIngredientIds = recipe.ingredients
       .filter(ing => ing.ingredient != null) // Filtrer pour ne garder que les ingrédients non nuls.
-      .map(ing => ing.ingredient._id); // Extraire les IDs des ingrédients.
+      .map(ing => ({
+        ingredientId: ing.ingredient._id,
+        quantity: ing.quantity
+      }));
 
+    console.log("startEdit recipeIngredientIds: ", recipeIngredientIds);
     // Mettre à jour l'état 'selectedIngredients' avec les IDs des ingrédients de la recette.
-    setSelectedIngredients(recipeIngredientIds);
+    // setSelectedIngredients(recipeIngredientIds);
     setSelectedIngredientsEdit(recipeIngredientIds);
 
     // Mettre à jour l'état 'selectedCategory' avec les catégories de la recette.
@@ -308,8 +313,8 @@ const RecipesManager = () => {
       console.log("recipeData:", recipeData);
 
       // Préparation des données des ingrédients pour la requête
-      recipeData.ingredients = recipeData.ingredients.map(ing => ({
-        ingredient: ing.ingredient,
+      recipeData.ingredients = selectedIngredientsEdit.map(ing => ({
+        ingredient: ing.ingredientId,
         quantity: ing.quantity || '1' // Assurez-vous que la quantité est définie
       }));
 
@@ -369,6 +374,13 @@ const RecipesManager = () => {
   };
 
 
+  const removeIngredientEdit = (index) => {
+    // Créer une nouvelle liste en excluant l'ingrédient à l'index spécifié
+    const updatedIngredients = selectedIngredientsEdit.filter((_, i) => i !== index);
+
+    // Mettre à jour l'état avec la nouvelle liste d'ingrédients
+    setSelectedIngredientsEdit(updatedIngredients);
+  };
 
 
   const deleteRecipe = async (recipeId) => {
@@ -430,10 +442,25 @@ const RecipesManager = () => {
           {/* Sélection des ingrédients */}
           <div>
             <label htmlFor="ingredient">Ingrédient :</label>
-            <select name="ingredient" onChange={handleIngredientSelect}>
-              {ingredients.map(ingredient => (
-                <option key={ingredient._id} value={ingredient._id}>{ingredient.name}</option>
-              ))}
+
+            {/* Champ de saisie pour le filtre d'ingrédients */}
+            <input
+              type="text"
+              placeholder="Rechercher un ingrédient"
+              value={ingredientFilter}
+              onChange={(e) => setIngredientFilter(e.target.value)}
+            />
+
+            <select name="ingredient" onChange={handleIngredientSelect} value="">
+            <option value="" disabled>Ajouter un ingrédient</option>
+              {ingredients
+                .filter(ingredient => ingredient.name.toLowerCase().includes(ingredientFilter.toLowerCase()))
+                .map(ingredient => (
+                  <option key={ingredient._id} value={ingredient._id}>{ingredient.name}</option>
+                ))}
+              {ingredients.filter(ingredient => ingredient.name.toLowerCase().includes(ingredientFilter.toLowerCase())).length === 0 && (
+                <option disabled>Aucun ingrédient trouvé</option>
+              )}
             </select>
 
             <ul>
@@ -526,8 +553,18 @@ const RecipesManager = () => {
           {/* Sélection des ingrédients en mode édition */}
           <div>
             <label htmlFor="ingredient">Ingrédient :</label>
-            <select name="ingredient" onChange={handleIngredientSelectEdit}>
-              {ingredients.map(ingredient => (
+            {/* Champ de saisie pour le filtre d'ingrédients */}
+            <input
+              type="text"
+              placeholder="Rechercher un ingrédient"
+              value={ingredientFilter}
+              onChange={(e) => setIngredientFilter(e.target.value)}
+            />
+            <select name="ingredient" onChange={handleIngredientSelectEdit}  value="">
+            <option value="" disabled>Ajouter un ingrédient</option>
+              {ingredients
+              .filter(ingredient => ingredient.name.toLowerCase().includes(ingredientFilter.toLowerCase()))
+              .map(ingredient => (
                 <option key={ingredient._id} value={ingredient._id}>{ingredient.name}</option>
               ))}
             </select>
@@ -545,22 +582,11 @@ const RecipesManager = () => {
                     onChange={(e) => handleQuantityChangeEdit(item.ingredientId, e.target.value)}
                     placeholder="Quantité (en grammes)"
                   />
+                  <button onClick={() => removeIngredientEdit(index)}>Supprimer</button>
                 </li>
               ))}
             </ul>
-            <ul>
 
-              {selectedIngredientsEdit.map((item, index) => {
-                const ingredient = ingredients.find(ing => ing._id === item.ingredientId);
-                console.log(`Ingrédient trouvé pour ID ${item.ingredientId}:`, ingredient);
-                return (
-                  <li key={index}>
-                    {ingredient ? ingredient.name : 'Ingrédient inconnu'}
-                    {/* Reste du code... */}
-                  </li>
-                );
-              })}
-            </ul>
 
           </div>
 
