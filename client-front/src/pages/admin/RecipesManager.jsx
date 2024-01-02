@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'; 
 import Navigation from '../Navigation.jsx'; // Assurez-vous que le chemin est correct
 
 const RecipesManager = () => {
@@ -8,6 +8,14 @@ const RecipesManager = () => {
   const [newRecipe, setNewRecipe] = useState({ title: '', description: '', steps: '', prepTime: 5, category: [] });
   const [editRecipeId, setEditRecipeId] = useState(null);
   const [editRecipe, setEditRecipe] = useState({});
+
+  const [recipeSteps, setRecipeSteps] = useState([]);
+const [newStep, setNewStep] = useState('');
+// Si vous utilisez un état séparé pour les étapes
+const [editRecipeSteps, setEditRecipeSteps] = useState([]);
+const [newEditStep, setNewEditStep] = useState('');
+
+
   const [editNewCategory, setEditNewCategory] = useState('');
   const [ingredients, setIngredients] = useState([]);
   const [selectedIngredients, setSelectedIngredients] = useState([]);
@@ -83,6 +91,13 @@ const RecipesManager = () => {
     });
   };
 
+
+  const addStep = () => {
+    if (newStep) {
+      setRecipeSteps([...recipeSteps, newStep]);
+      setNewStep(''); // Réinitialiser le champ après l'ajout
+    }
+  };
 
   // Définition de la fonction handleInputChange avec deux paramètres : 
   // e (l'événement) et isEdit (un booléen qui indique si l'on est en train de modifier une recette existante).
@@ -216,7 +231,7 @@ const RecipesManager = () => {
   const addRecipe = async () => {
     try {
       // Vérifier si tous les champs requis pour une nouvelle recette sont remplis.
-      if (!newRecipe.title || !newRecipe.description || !newRecipe.steps || newRecipe.prepTime === 0) {
+      if (!newRecipe.title || !newRecipe.description || !recipeSteps || newRecipe.prepTime === 0) {
         console.error("Tous les champs requis doivent être remplis.");
         return; // Arrêter l'exécution de la fonction si un champ requis est manquant.
       }
@@ -238,7 +253,9 @@ const RecipesManager = () => {
       // Préparer les données de la nouvelle recette.
       const recipeData = {
         ...newRecipe, // Copier toutes les propriétés de 'newRecipe'.
-        ingredients: selectedIngredients.map(item => ({
+        steps: recipeSteps, // Ajouter les étapes ici
+
+        ingredients: selectedIngredients.map(item => ({        
           ingredient: item.ingredientId, // Utilisez uniquement l'ObjectId de l'ingrédient
           quantity: item.quantity
         }))
@@ -282,9 +299,11 @@ const RecipesManager = () => {
   const startEdit = (recipe) => {
     // Définir l'ID de la recette en cours de modification.
     setEditRecipeId(recipe._id);
-
+ 
     // Mettre à jour l'état 'editRecipe' avec les données de la recette sélectionnée.
     setEditRecipe({ ...recipe });
+
+    setEditRecipeSteps(recipe.steps || []);
 
     // Filtrer et extraire les IDs des ingrédients de la recette qui ne sont pas nuls.
     const recipeIngredientIds = recipe.ingredients
@@ -303,14 +322,26 @@ const RecipesManager = () => {
     setSelectedCategory(recipe.categories);
   };
 
+const addEditStep = () => {
+  if (newEditStep) {
+    setEditRecipeSteps([...editRecipeSteps, newEditStep]);
+    setNewEditStep('');
+  }
+};
 
+const handleEditStepChange = (index, newStep) => {
+  const updatedSteps = editRecipeSteps.map((step, i) => i === index ? newStep : step);
+  setEditRecipeSteps(updatedSteps);
+};
 
   // Définition de la fonction asynchrone 'editRecipeSubmit'.
   const editRecipeSubmit = async () => {
     try {
       // Copie de l'état actuel de 'editRecipe' dans 'recipeData'.
-      let recipeData = { ...editRecipe };
+      let recipeData = { ...editRecipe, steps: editRecipeSteps  };
       console.log("recipeData:", recipeData);
+
+      
 
       // Préparation des données des ingrédients pour la requête
       recipeData.ingredients = selectedIngredientsEdit.map(ing => ({
@@ -422,13 +453,23 @@ const RecipesManager = () => {
             placeholder="Description"
           />
 
-          {/* Zone de texte pour les étapes de la recette */}
-          <textarea
-            name="steps"
-            value={newRecipe.steps}
-            onChange={handleInputChange}
-            placeholder="Étapes (séparées par des virgules)"
-          />
+         {/* Champ de saisie pour une nouvelle étape */}
+<input
+  type="text"
+  value={newStep}
+  onChange={(e) => setNewStep(e.target.value)}
+  placeholder="Ajouter une nouvelle étape"
+/>
+
+{/* Bouton pour ajouter une étape */}
+<button onClick={addStep}>Ajouter une étape</button>
+
+{/* Affichage des étapes ajoutées */}
+<ul>
+  {recipeSteps.map((step, index) => (
+    <li key={index}>{step}</li>
+  ))}
+</ul>
 
           {/* Champ de saisie pour le temps de préparation */}
           <input
@@ -533,13 +574,29 @@ const RecipesManager = () => {
             placeholder="Description"
           />
 
-          {/* Zone de texte pour les étapes de la recette en mode édition */}
-          <textarea
-            name="steps"
-            value={editRecipe ? editRecipe.steps : ''}
-            onChange={(e) => handleInputChange(e, true)}
-            placeholder="Étapes (séparées par des virgules)"
-          />
+          {/* Champ de saisie pour une nouvelle étape en mode édition */}
+<input
+  type="text"
+  value={newEditStep}
+  onChange={(e) => setNewEditStep(e.target.value)}
+  placeholder="Ajouter une nouvelle étape"
+/>
+
+{/* Bouton pour ajouter une étape en mode édition */}
+<button onClick={addEditStep}>Ajouter une étape</button>
+
+{/* Affichage et modification des étapes ajoutées en mode édition */}
+<ul>
+  {editRecipeSteps.map((step, index) => (
+    <li key={index}>
+      <input
+        type="text"
+        value={step}
+        onChange={(e) => handleEditStepChange(index, e.target.value)}
+      />
+    </li>
+  ))}
+</ul>
 
           {/* Champ de saisie pour le temps de préparation en mode édition */}
           <input
