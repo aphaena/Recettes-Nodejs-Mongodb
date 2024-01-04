@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'; 
+import React, { useState, useEffect } from 'react';
 import Navigation from '../Navigation.jsx'; // Assurez-vous que le chemin est correct
 
 const RecipesManager = () => {
@@ -10,10 +10,15 @@ const RecipesManager = () => {
   const [editRecipe, setEditRecipe] = useState({});
 
   const [recipeSteps, setRecipeSteps] = useState([]);
-const [newStep, setNewStep] = useState('');
-// Si vous utilisez un état séparé pour les étapes
-const [editRecipeSteps, setEditRecipeSteps] = useState([]);
-const [newEditStep, setNewEditStep] = useState('');
+  const [newStep, setNewStep] = useState('');
+  const [editRecipeSteps, setEditRecipeSteps] = useState([]);
+  const [newEditStep, setNewEditStep] = useState('');
+
+  const [imageUrls, setImageUrls] = useState([]);
+  const [newImageUrl, setNewImageUrl] = useState('');
+  const [imageFiles, setImageFiles] = useState([]);
+
+  const [existingImages, setExistingImages] = useState(editRecipe?.images || []);
 
 
   const [editNewCategory, setEditNewCategory] = useState('');
@@ -98,6 +103,48 @@ const [newEditStep, setNewEditStep] = useState('');
       setNewStep(''); // Réinitialiser le champ après l'ajout
     }
   };
+
+  const addImage = () => {
+    if (newImageUrl) {
+      setImageUrls([...imageUrls, newImageUrl]);
+      setNewImageUrl(''); // Réinitialiser après l'ajout
+    }
+  };
+
+  const handleImageChange = (e) => {
+    // Cette fonction mettra à jour l'état avec les fichiers sélectionnés.
+    setImageFiles([...e.target.files]);
+  };
+
+  const handleImageUpload = async (e) => {
+    e.preventDefault();
+    if (!imageFiles) return;
+  
+    const formData = new FormData();
+    formData.append('image', imageFiles);
+  
+    try {
+      const response = await fetch(`${APIURL}/api/v1/upload-image`, {
+        method: 'POST',
+        body: formData,
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        // Traitez la réponse, par exemple, enregistrez l'URL de l'image renvoyée par le serveur
+      } else {
+        console.error('Erreur lors du téléchargement de l\'image');
+      }
+    } catch (error) {
+      console.error('Erreur:', error);
+    }
+  };
+  
+  const handleRemoveImage = (imageIndex) => {
+    setExistingImages((currentImages) => 
+      currentImages.filter((_, index) => index !== imageIndex));
+  };
+  
 
   // Définition de la fonction handleInputChange avec deux paramètres : 
   // e (l'événement) et isEdit (un booléen qui indique si l'on est en train de modifier une recette existante).
@@ -227,79 +274,143 @@ const [newEditStep, setNewEditStep] = useState('');
 
 
 
-  // Définition de la fonction asynchrone 'addRecipe'.
-  const addRecipe = async () => {
-    try {
-      // Vérifier si tous les champs requis pour une nouvelle recette sont remplis.
-      if (!newRecipe.title || !newRecipe.description || !recipeSteps || newRecipe.prepTime === 0) {
-        console.error("Tous les champs requis doivent être remplis.");
-        return; // Arrêter l'exécution de la fonction si un champ requis est manquant.
-      }
+  // // Définition de la fonction asynchrone 'addRecipe'.
+  // const addRecipe = async () => {
+  //   try {
+  //     // Vérifier si tous les champs requis pour une nouvelle recette sont remplis.
+  //     if (!newRecipe.title || !newRecipe.description || !recipeSteps || newRecipe.prepTime === 0) {
+  //       console.error("Tous les champs requis doivent être remplis.");
+  //       return; // Arrêter l'exécution de la fonction si un champ requis est manquant.
+  //     }
 
-      // Déterminer les catégories à envoyer avec la nouvelle recette.
-      let categoriesToSend;
-      if (selectedCategory === 'other' && newCategory) {
-        // Si l'utilisateur a sélectionné 'other' et a entré une nouvelle catégorie.
-        categoriesToSend = [newCategory];
-      } else if (selectedCategory && selectedCategory !== 'other') {
-        // Si une catégorie existante est sélectionnée.
-        categoriesToSend = [selectedCategory];
-      } else {
-        // Si aucune catégorie n'est spécifiée.
-        console.error("Catégorie non spécifiée.");
-        return; // Arrêter l'exécution de la fonction.
-      }
+  //     // Déterminer les catégories à envoyer avec la nouvelle recette.
+  //     let categoriesToSend;
+  //     if (selectedCategory === 'other' && newCategory) {
+  //       // Si l'utilisateur a sélectionné 'other' et a entré une nouvelle catégorie.
+  //       categoriesToSend = [newCategory];
+  //     } else if (selectedCategory && selectedCategory !== 'other') {
+  //       // Si une catégorie existante est sélectionnée.
+  //       categoriesToSend = [selectedCategory];
+  //     } else {
+  //       // Si aucune catégorie n'est spécifiée.
+  //       console.error("Catégorie non spécifiée.");
+  //       return; // Arrêter l'exécution de la fonction.
+  //     }
 
-      // Préparer les données de la nouvelle recette.
-      const recipeData = {
-        ...newRecipe, // Copier toutes les propriétés de 'newRecipe'.
-        steps: recipeSteps, // Ajouter les étapes ici
+  //     // Préparer les données de la nouvelle recette.
+  //     const recipeData = {
+  //       ...newRecipe, // Copier toutes les propriétés de 'newRecipe'.
+  //       steps: recipeSteps, // Ajouter les étapes ici
 
-        ingredients: selectedIngredients.map(item => ({        
-          ingredient: item.ingredientId, // Utilisez uniquement l'ObjectId de l'ingrédient
-          quantity: item.quantity
-        }))
-      };
+  //       ingredients: selectedIngredients.map(item => ({
+  //         ingredient: item.ingredientId, // Utilisez uniquement l'ObjectId de l'ingrédient
+  //         quantity: item.quantity
+  //       }))
+  //     };
 
-      console.log("newCategory:", newCategory);
-      console.log("recipeData.category:", recipeData.category);
-      console.log("newRecipe:", newRecipe);
+  //     console.log("newCategory:", newCategory);
+  //     console.log("recipeData.category:", recipeData.category);
+  //     console.log("newRecipe:", newRecipe);
 
-      // Envoyer une requête POST pour ajouter la nouvelle recette.
-      const response = await fetch(`${APIURL}/api/v1/recipes/recipe`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(recipeData) // Convertir les données de la recette en JSON.
+  //     // Envoyer une requête POST pour ajouter la nouvelle recette.
+  //     const response = await fetch(`${APIURL}/api/v1/recipes/recipe`, {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify(recipeData) // Convertir les données de la recette en JSON.
+  //     });
+
+  //     console.log(" JSON.stringify(recipeData):", JSON.stringify(recipeData));
+
+  //     // Vérifier si la requête a réussi.
+  //     if (response.ok) {
+  //       const updatedGlobalCategories = [...new Set([...categories, ...newRecipe.category])];
+  //       setCategories(updatedGlobalCategories);
+  //       fetchRecipes(); // Récupérer la liste mise à jour des recettes.
+  //       // Réinitialiser les états pour les champs de saisie de la recette.
+  //       setNewRecipe({ title: '', description: '', steps: '', prepTime: 0, category: [] });
+  //       setSelectedIngredients([]);
+  //       setNewCategory('');
+  //     } else {
+  //       // Gérer les erreurs de réponse.
+  //       const errorData = await response.json();
+  //       console.error('Erreur lors de l\'ajout de la recette:', errorData);
+  //     }
+  //   } catch (error) {
+  //     // Gérer les erreurs de la requête.
+  //     console.error('Erreur lors de l\'ajout de la recette:', error);
+  //   }
+  // };
+
+// Définition de la fonction asynchrone 'addRecipe'.
+const addRecipe = async () => {
+  try {
+    // Vérifier si tous les champs requis pour une nouvelle recette sont remplis.
+    if (!newRecipe.title || !newRecipe.description || !recipeSteps || newRecipe.prepTime === 0) {
+      console.error("Tous les champs requis doivent être remplis.");
+      return;
+    }
+
+    // Préparation du FormData
+    const formData = new FormData();
+    formData.append('title', newRecipe.title);
+    formData.append('description', newRecipe.description);
+    if (imageFiles && imageFiles.length > 0) {
+      imageFiles.forEach((file) => {
+        formData.append('images', file); 
       });
+    }
+  
+    formData.append('prepTime', newRecipe.prepTime);
+    recipeSteps.forEach((step, index) => formData.append(`steps[${index}]`, step));
+    selectedIngredients.forEach((item, index) => {
+      formData.append(`ingredients[${index}][ingredientId]`, item.ingredientId);
+      formData.append(`ingredients[${index}][quantity]`, item.quantity);
+    });
+   
 
-      console.log(" JSON.stringify(recipeData):", JSON.stringify(recipeData));
+    // Si l'utilisateur a sélectionné 'other' et a entré une nouvelle catégorie.
+    if (selectedCategory === 'other' && newCategory) {
+      formData.append('categories', newCategory);
+    } else if (selectedCategory && selectedCategory !== 'other') {
+      // Si une catégorie existante est sélectionnée.
+      formData.append('categories', selectedCategory);
+    }
 
-      // Vérifier si la requête a réussi.
-      if (response.ok) {
-        const updatedGlobalCategories = [...new Set([...categories, ...newRecipe.category])];
+    // Envoyer une requête POST pour ajouter la nouvelle recette.
+    const response = await fetch(`${APIURL}/api/v1/recipes/recipe`, {
+      method: 'POST',
+      body: formData // Utiliser FormData
+    });
+
+    // Vérifier si la requête a réussi.
+    if (response.ok) {
+      // Mise à jour de l'état et réinitialisation des formulaires
+      const updatedGlobalCategories = [...new Set([...categories, ...newRecipe.category])];
         setCategories(updatedGlobalCategories);
         fetchRecipes(); // Récupérer la liste mise à jour des recettes.
         // Réinitialiser les états pour les champs de saisie de la recette.
         setNewRecipe({ title: '', description: '', steps: '', prepTime: 0, category: [] });
         setSelectedIngredients([]);
         setNewCategory('');
-      } else {
-        // Gérer les erreurs de réponse.
-        const errorData = await response.json();
-        console.error('Erreur lors de l\'ajout de la recette:', errorData);
-      }
-    } catch (error) {
-      // Gérer les erreurs de la requête.
-      console.error('Erreur lors de l\'ajout de la recette:', error);
+        setExistingImages([]);
+        setImageFiles([]);
+        setImageUrls([]);
+    } else {
+      // Gérer les erreurs de réponse
+      const errorData = await response.json();
+             console.error('Erreur lors de l\'ajout de la recette:', errorData);
     }
-  };
-
+  } catch (error) {
+    // Gérer les erreurs de la requête
+    console.error('Erreur lors de l\'ajout de la recette:', error);
+  }
+};
 
   // Définition de la fonction 'startEdit' qui prend en paramètre une recette.
   const startEdit = (recipe) => {
     // Définir l'ID de la recette en cours de modification.
     setEditRecipeId(recipe._id);
- 
+
     // Mettre à jour l'état 'editRecipe' avec les données de la recette sélectionnée.
     setEditRecipe({ ...recipe });
 
@@ -320,89 +431,161 @@ const [newEditStep, setNewEditStep] = useState('');
 
     // Mettre à jour l'état 'selectedCategory' avec les catégories de la recette.
     setSelectedCategory(recipe.categories);
+    // Mettre à jour les images existantes
+    setExistingImages(recipe.images || []);
   };
 
-const addEditStep = () => {
-  if (newEditStep) {
-    setEditRecipeSteps([...editRecipeSteps, newEditStep]);
-    setNewEditStep('');
-  }
-};
-
-const handleEditStepChange = (index, newStep) => {
-  const updatedSteps = editRecipeSteps.map((step, i) => i === index ? newStep : step);
-  setEditRecipeSteps(updatedSteps);
-};
-
-  // Définition de la fonction asynchrone 'editRecipeSubmit'.
-  const editRecipeSubmit = async () => {
-    try {
-      // Copie de l'état actuel de 'editRecipe' dans 'recipeData'.
-      let recipeData = { ...editRecipe, steps: editRecipeSteps  };
-      console.log("recipeData:", recipeData);
-
-      
-
-      // Préparation des données des ingrédients pour la requête
-      recipeData.ingredients = selectedIngredientsEdit.map(ing => ({
-        ingredient: ing.ingredientId,
-        quantity: ing.quantity || '1' // Assurez-vous que la quantité est définie
-      }));
-
-      // Préparation des catégories
-      let categoriesToUpdate = selectedCategory === 'other' && newCategory
-        ? [...recipeData.category, newCategory]
-        : recipeData.category;
-
-      console.log("newCategory:", newCategory);
-      console.log("recipeData.category:", recipeData.category);
-      console.log("categoriesToUpdate:", categoriesToUpdate);
-      // Mise à jour des catégories dans recipeData
-      categoriesToUpdate = [...new Set(categoriesToUpdate)];
-
-
-
-      recipeData.category = categoriesToUpdate;
-
-      console.log("recipeData:", recipeData);
-      console.log("recipeData.category:", recipeData.category);
-
-      // Vérification si au moins une catégorie est définie.
-      if (!recipeData.category.length) {
-        console.error("Au moins une catégorie est requise.");
-        return;
-      }
-
-      console.log("JSON.stringify(recipeData):", JSON.stringify(recipeData));
-
-      // Envoi de la requête de mise à jour de la recette.
-      const response = await fetch(`${APIURL}/api/v1/recipes/recipe/${editRecipeId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(recipeData)
-      });
-
-      // Traitement de la réponse.
-      if (response.ok) {
-        // Réinitialisation des états après la mise à jour réussie.
-        const updatedGlobalCategories = [...new Set([...categories, ...editRecipe.category])];
-        setCategories(updatedGlobalCategories);
-        setEditRecipeId(null);
-        setEditRecipe({});
-        fetchRecipes();
-        setSelectedIngredients([]);
-        setNewCategory('');
-        setSelectedCategory('');
-      } else {
-        // Gestion des erreurs de la réponse.
-        const errorData = await response.json();
-        console.error('Erreur lors de la modification de la recette:', errorData.message);
-      }
-    } catch (error) {
-      // Gestion des erreurs lors de l'exécution de la requête.
-      console.error('Erreur lors de la modification de la recette:', error);
+  const addEditStep = () => {
+    if (newEditStep) {
+      setEditRecipeSteps([...editRecipeSteps, newEditStep]);
+      setNewEditStep('');
     }
   };
+
+  const handleEditStepChange = (index, newStep) => {
+    const updatedSteps = editRecipeSteps.map((step, i) => i === index ? newStep : step);
+    setEditRecipeSteps(updatedSteps);
+  };
+
+  // Définition de la fonction asynchrone 'editRecipeSubmit'.
+  // const editRecipeSubmit = async () => {
+  //   try {
+  //     // Copie de l'état actuel de 'editRecipe' dans 'recipeData'.
+  //     let recipeData = { ...editRecipe, steps: editRecipeSteps };
+  //     console.log("recipeData:", recipeData);
+
+  //     // Préparation des données des ingrédients pour la requête
+  //     recipeData.ingredients = selectedIngredientsEdit.map(ing => ({
+  //       ingredient: ing.ingredientId,
+  //       quantity: ing.quantity || '1' // Assurez-vous que la quantité est définie
+  //     }));
+
+  //     // Préparation des catégories
+  //     let categoriesToUpdate = selectedCategory === 'other' && newCategory
+  //       ? [...recipeData.category, newCategory]
+  //       : recipeData.category;
+
+  //     console.log("newCategory:", newCategory);
+  //     console.log("recipeData.category:", recipeData.category);
+  //     console.log("categoriesToUpdate:", categoriesToUpdate);
+  //     // Mise à jour des catégories dans recipeData
+  //     categoriesToUpdate = [...new Set(categoriesToUpdate)];
+
+  //     recipeData.category = categoriesToUpdate;
+
+  //     console.log("recipeData:", recipeData);
+  //     console.log("recipeData.category:", recipeData.category);
+
+  //     // Vérification si au moins une catégorie est définie.
+  //     if (!recipeData.category.length) {
+  //       console.error("Au moins une catégorie est requise.");
+  //       return;
+  //     }
+
+  //     console.log("JSON.stringify(recipeData):", JSON.stringify(recipeData));
+
+  //     // Envoi de la requête de mise à jour de la recette.
+  //     const response = await fetch(`${APIURL}/api/v1/recipes/recipe/${editRecipeId}`, {
+  //       method: 'PATCH',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify(recipeData)
+  //     });
+
+  //     // Traitement de la réponse.
+  //     if (response.ok) {
+  //       // Réinitialisation des états après la mise à jour réussie.
+  //       const updatedGlobalCategories = [...new Set([...categories, ...editRecipe.category])];
+  //       setCategories(updatedGlobalCategories);
+  //       setEditRecipeId(null);
+  //       setEditRecipe({});
+  //       fetchRecipes();
+  //       setSelectedIngredients([]);
+  //       setNewCategory('');
+  //       setSelectedCategory('');
+  //       setExistingImages([]);
+  //       setImageFiles([]);
+  //       setImageUrls([]);
+  //     } else {
+  //       // Gestion des erreurs de la réponse.
+  //       const errorData = await response.json();
+  //       console.error('Erreur lors de la modification de la recette:', errorData.message);
+  //     }
+  //   } catch (error) {
+  //     // Gestion des erreurs lors de l'exécution de la requête.
+  //     console.error('Erreur lors de la modification de la recette:', error);
+  //   }
+  // };
+
+  // Définition de la fonction asynchrone 'editRecipeSubmit'.
+const editRecipeSubmit = async () => {
+  try {
+    // Création d'une instance de FormData pour gérer les données de formulaire
+    const formData = new FormData();
+    formData.append('title', editRecipe.title);
+    formData.append('description', editRecipe.description);
+    formData.append('prepTime', editRecipe.prepTime);
+    
+    // Ajout des étapes de la recette
+    editRecipeSteps.forEach((step, index) => formData.append(`steps[${index}]`, step));
+
+    // Ajout des ingrédients
+    selectedIngredientsEdit.forEach((item, index) => {
+      formData.append(`ingredients[${index}][ingredientId]`, item.ingredientId);
+      formData.append(`ingredients[${index}][quantity]`, item.quantity);
+    });
+
+    // Ajout des images
+    //imageFiles.forEach(file => formData.append('images', file));
+   
+  // Ajout des fichiers d'image, si disponibles
+  if (imageFiles && imageFiles.length > 0) {
+    imageFiles.forEach((file) => {
+      formData.append('images', file); 
+    });
+  }
+
+  console.log("EditRecipeSubmit existingImages:",existingImages);
+  // Ajout des images existantesconsole.log("EditRecipeSubmit existingImages:",existingImages);
+ formData.append('existingImages', JSON.stringify(existingImages));
+
+    // Ajout des catégories
+    const categoriesToUpdate = selectedCategory === 'other' && newCategory
+      ? [...editRecipe.category, newCategory]
+      : editRecipe.category;
+    categoriesToUpdate.forEach(category => formData.append('categories', category));
+    console.log("EditRecipeSubmit editRecipeId:",editRecipeId);
+    console.log("EditRecipeSubmit formData:",formData);
+    // Envoi de la requête de mise à jour de la recette
+    const response = await fetch(`${APIURL}/api/v1/recipes/recipe/${editRecipeId}`, {
+      method: 'PATCH',
+      body: formData  // Envoyer FormData
+    });
+
+    // Traitement de la réponse
+    if (response.ok) {
+      // Réinitialisation des états après la mise à jour réussie
+      // (ajustez ces états en fonction de votre application)
+      const updatedGlobalCategories = [...new Set([...categories, ...categoriesToUpdate])];
+      setCategories(updatedGlobalCategories);
+      setEditRecipeId(null);
+      setEditRecipe({});
+      fetchRecipes(); // Mettez à jour la liste des recettes
+      setSelectedIngredients([]);
+      setNewCategory('');
+      setSelectedCategory('');
+      setExistingImages([]);
+      setImageFiles([]);
+      setImageUrls([]);
+    } else {
+      // Gestion des erreurs de la réponse
+      const errorData = await response.json();
+      console.error('Erreur lors de la modification de la recette:', errorData.message);
+    }
+  } catch (error) {
+    // Gestion des erreurs lors de l'exécution de la requête
+    console.error('Erreur lors de la modification de la recette:', error);
+  }
+};
 
 
   const removeIngredientEdit = (index) => {
@@ -453,23 +636,45 @@ const handleEditStepChange = (index, newStep) => {
             placeholder="Description"
           />
 
-         {/* Champ de saisie pour une nouvelle étape */}
+          {/* Champ de saisie pour les images */}
 <input
-  type="text"
-  value={newStep}
-  onChange={(e) => setNewStep(e.target.value)}
-  placeholder="Ajouter une nouvelle étape"
+  type="file"
+  multiple
+  onChange={handleImageChange}
+  accept="image/*"
 />
-
-{/* Bouton pour ajouter une étape */}
-<button onClick={addStep}>Ajouter une étape</button>
-
-{/* Affichage des étapes ajoutées */}
-<ul>
-  {recipeSteps.map((step, index) => (
-    <li key={index}>{step}</li>
+<div>
+  {imageFiles.map((file, index) => (
+    <img key={index} src={URL.createObjectURL(file)} alt={`Aperçu ${index}`} />
   ))}
-</ul>
+</div>
+<div>
+{existingImages && existingImages.map((imageUrl, index) => (    
+   <div key={index} className="image-container">
+  <img key={index} src={APIURL+"/"+imageUrl.replace(/\\/g, '/')} alt={`Image existante ${index}`} />  
+  <button onClick={() => handleRemoveImage(index)} className="delete-btn">X</button>
+  </div>
+))}
+</div>
+
+
+          {/* Champ de saisie pour une nouvelle étape */}
+          <input
+            type="text"
+            value={newStep}
+            onChange={(e) => setNewStep(e.target.value)}
+            placeholder="Ajouter une nouvelle étape"
+          />
+
+          {/* Bouton pour ajouter une étape */}
+          <button onClick={addStep}>Ajouter une étape</button>
+
+          {/* Affichage des étapes ajoutées */}
+          <ul>
+            {recipeSteps.map((step, index) => (
+              <li key={index}>{step}</li>
+            ))}
+          </ul>
 
           {/* Champ de saisie pour le temps de préparation */}
           <input
@@ -493,7 +698,7 @@ const handleEditStepChange = (index, newStep) => {
             />
 
             <select name="ingredient" onChange={handleIngredientSelect} value="">
-            <option value="" disabled>Ajouter un ingrédient</option>
+              <option value="" disabled>Ajouter un ingrédient</option>
               {ingredients
                 .filter(ingredient => ingredient.name.toLowerCase().includes(ingredientFilter.toLowerCase()))
                 .map(ingredient => (
@@ -574,29 +779,52 @@ const handleEditStepChange = (index, newStep) => {
             placeholder="Description"
           />
 
-          {/* Champ de saisie pour une nouvelle étape en mode édition */}
+          {/* Champ de saisie pour les images */}
 <input
-  type="text"
-  value={newEditStep}
-  onChange={(e) => setNewEditStep(e.target.value)}
-  placeholder="Ajouter une nouvelle étape"
+  type="file"
+  multiple
+  onChange={(e) => setImageFiles([...e.target.files])}
+  accept="image/*"
 />
-
-{/* Bouton pour ajouter une étape en mode édition */}
-<button onClick={addEditStep}>Ajouter une étape</button>
-
-{/* Affichage et modification des étapes ajoutées en mode édition */}
-<ul>
-  {editRecipeSteps.map((step, index) => (
-    <li key={index}>
-      <input
-        type="text"
-        value={step}
-        onChange={(e) => handleEditStepChange(index, e.target.value)}
-      />
-    </li>
+<div>
+  {imageFiles.map((file, index) => (
+    <img key={index} src={URL.createObjectURL(file)} alt={`Aperçu ${index}`} />
   ))}
-</ul>
+</div>
+<div>
+{existingImages && existingImages.map((imageUrl, index) => (    
+   <div key={index} className="image-container">
+  <img key={index} src={APIURL+"/"+imageUrl.replace(/\\/g, '/')} alt={`Image existante ${index}`} />  
+  <button onClick={() => handleRemoveImage(index)} className="delete-btn">X</button>
+  </div>
+))}
+</div>
+
+
+
+          {/* Champ de saisie pour une nouvelle étape en mode édition */}
+          <input
+            type="text"
+            value={newEditStep}
+            onChange={(e) => setNewEditStep(e.target.value)}
+            placeholder="Ajouter une nouvelle étape"
+          />
+
+          {/* Bouton pour ajouter une étape en mode édition */}
+          <button onClick={addEditStep}>Ajouter une étape</button>
+
+          {/* Affichage et modification des étapes ajoutées en mode édition */}
+          <ul>
+            {editRecipeSteps.map((step, index) => (
+              <li key={index}>
+                <input
+                  type="text"
+                  value={step}
+                  onChange={(e) => handleEditStepChange(index, e.target.value)}
+                />
+              </li>
+            ))}
+          </ul>
 
           {/* Champ de saisie pour le temps de préparation en mode édition */}
           <input
@@ -617,13 +845,13 @@ const handleEditStepChange = (index, newStep) => {
               value={ingredientFilter}
               onChange={(e) => setIngredientFilter(e.target.value)}
             />
-            <select name="ingredient" onChange={handleIngredientSelectEdit}  value="">
-            <option value="" disabled>Ajouter un ingrédient</option>
+            <select name="ingredient" onChange={handleIngredientSelectEdit} value="">
+              <option value="" disabled>Ajouter un ingrédient</option>
               {ingredients
-              .filter(ingredient => ingredient.name.toLowerCase().includes(ingredientFilter.toLowerCase()))
-              .map(ingredient => (
-                <option key={ingredient._id} value={ingredient._id}>{ingredient.name}</option>
-              ))}
+                .filter(ingredient => ingredient.name.toLowerCase().includes(ingredientFilter.toLowerCase()))
+                .map(ingredient => (
+                  <option key={ingredient._id} value={ingredient._id}>{ingredient.name}</option>
+                ))}
             </select>
           </div>
 

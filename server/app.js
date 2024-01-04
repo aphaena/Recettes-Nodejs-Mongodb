@@ -16,8 +16,12 @@ const imageRoutes = require('./routes/imageRoutes');
 const stepRoutes = require('./routes/stepRoutes');
 
 const ingredientRoutes = require('./routes/ingredientRoutes');
-
 const app = express();
+const path = require('path');
+
+const upload = require('./middleware/upload'); 
+
+
 
 app.use(express.json());
 app.use(cors({
@@ -40,6 +44,17 @@ app.use('/api/v1/recipes', imageRoutes);
 app.use('/api/v1/recipes', stepRoutes);
 
 app.use('/api/v1/ingredients', ingredientRoutes);
-// Gestion des erreurs globales ici
+
+// Route pour télécharger des images
+app.post('/api/v1/upload-images', upload.array('images'), (req, res) => {
+  // Ici, vous pouvez traiter les fichiers téléchargés comme nécessaire
+  res.status(200).json({
+    status: 'success',
+    files: req.files.map(file => file.path)
+  });
+});
+
+// Servez les fichiers statiques du dossier 'images'
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 module.exports = app;

@@ -8,6 +8,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.3.0",
     "mongoose": "^8.0.2",
+    "multer": "^1.4.5-lts.1",
     "node": "^21.2.0",
     "nvm": "^0.0.4",
     "react-router-dom": "^6.20.1"

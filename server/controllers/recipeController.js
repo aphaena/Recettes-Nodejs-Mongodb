@@ -4,11 +4,13 @@ const Recipe = require('../models/recipeModel');
 // Ajouter une nouvelle recette
 exports.addRecipe = async (req, res) => {
   try {
+    const imagePaths = req.files.map(file => file.path);
 
     const newRecipeData = {
       ...req.body,
       categories: Array.isArray(req.body.categories) ? req.body.categories : [req.body.categories],
       comments: Array.isArray(req.body.comments) ? req.body.comments : [req.body.comments],
+      images: imagePaths,
     };
 
     const newRecipe = await Recipe.create(newRecipeData);
@@ -66,10 +68,28 @@ exports.getRecipe = async (req, res) => {
 // Mettre à jour une recette
 exports.updateRecipe = async (req, res) => {
   try {
-    const recipe = await Recipe.findByIdAndUpdate(req.params.id, req.body, {
+    // Logique pour les images téléchargées
+    const imagePaths = req.files ? req.files.map(file => file.path) : [];
+
+    let updateData = {
+      ...req.body,
+      categories: Array.isArray(req.body.categories) ? req.body.categories : [req.body.categories],
+      comments: Array.isArray(req.body.comments) ? req.body.comments : [req.body.comments],
+    };
+
+ // Gérer les images
+ const existingImages = req.body.existingImages ? JSON.parse(req.body.existingImages) : [];
+ if (imagePaths.length > 0) {
+   updateData.images = [...existingImages, ...imagePaths]; // Combine les images existantes et les nouvelles
+ } else {
+   updateData.images = existingImages;
+ }
+
+    const recipe = await Recipe.findByIdAndUpdate(req.params.id, updateData, {
       new: true,
       runValidators: true
     }).populate('ingredients.ingredient');
+
     res.status(200).json({
       status: 'success',
       data: {
@@ -83,6 +103,7 @@ exports.updateRecipe = async (req, res) => {
     });
   }
 };
+
 
 // Supprimer une recette
 exports.deleteRecipe = async (req, res) => {
