@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from 'react'; 
+import React, { useState, useEffect } from 'react';
 import Navigation from '../Navigation.jsx'; // Assurez-vous que le chemin est correct
 
 const RecipesManager = () => {
   const [recipes, setRecipes] = useState([]);
 
 
-  const [newRecipe, setNewRecipe] = useState({ title: '', description: '', steps: '', prepTime: 5, category: [] });
+  const [newRecipe, setNewRecipe] = useState({ title: '', description: '', steps: '', prepTime: 30, category: [] });
   const [editRecipeId, setEditRecipeId] = useState(null);
   const [editRecipe, setEditRecipe] = useState({});
 
   const [recipeSteps, setRecipeSteps] = useState([]);
-const [newStep, setNewStep] = useState('');
-// Si vous utilisez un état séparé pour les étapes
-const [editRecipeSteps, setEditRecipeSteps] = useState([]);
-const [newEditStep, setNewEditStep] = useState('');
+  const [newStep, setNewStep] = useState('');
+  // Si vous utilisez un état séparé pour les étapes
+  const [editRecipeSteps, setEditRecipeSteps] = useState([]);
+  const [newEditStep, setNewEditStep] = useState('');
 
 
   const [editNewCategory, setEditNewCategory] = useState('');
@@ -134,7 +134,7 @@ const [newEditStep, setNewEditStep] = useState('');
 
   const handleIngredientSelectEdit = (e) => {
     const selectedIngredientId = e.target.value;
-    console.log("Ingrédient sélectionné:", selectedIngredientId);
+    //console.log("Ingrédient sélectionné:", selectedIngredientId);
     const alreadySelected = selectedIngredientsEdit.some(item => item.ingredientId === selectedIngredientId);
 
     if (!alreadySelected) {
@@ -155,7 +155,7 @@ const [newEditStep, setNewEditStep] = useState('');
         item.ingredientId === ingredientId ? { ...item, quantity: newQuantity } : item
       )
     );
-    console.log("const handleQuantityChangeEdit: ", handleQuantityChangeEdit);
+    //console.log("const handleQuantityChangeEdit: ", handleQuantityChangeEdit);
   };
 
 
@@ -168,15 +168,17 @@ const [newEditStep, setNewEditStep] = useState('');
     setSelectedCategory(value);
     if (value !== 'other') {
       setEditRecipe(prev => {
-        const updatedCategory = prev.category ? [...prev.category] : [];
-        if (!updatedCategory.includes(value)) {
-          updatedCategory.push(value);
+        const updatedCategories = prev.category 
+        ? [...prev.category] 
+        : [...prev.category, value];
+        if (!updatedCategories.includes(value)) {
+          updatedCategories.push(value);
           // Mettre à jour les catégories globales si la catégorie n'est pas déjà présente
           if (!categories.includes(value)) {
             setCategories(currentCategories => [...currentCategories, value]);
           }
         }
-        return { ...prev, category: updatedCategory };
+        return { ...prev, category: updatedCategories };
       });
     }
   };
@@ -190,18 +192,30 @@ const [newEditStep, setNewEditStep] = useState('');
     if (value !== 'other') {
       setNewRecipe(prev => {
         // Assurez-vous que prev.category est initialisé comme un tableau
-        const updatedCategory = prev.category ? [...prev.category] : [];
-        if (!updatedCategory.includes(value)) {
-          updatedCategory.push(value);
+        const updatedCategories = prev.category ? [...prev.category] : [];
+        if (!updatedCategories.includes(value)) {
+          updatedCategories.push(value);
           // Mettre à jour les catégories globales si la catégorie n'est pas déjà présente
           if (!categories.includes(value)) {
             setCategories(currentCategories => [...currentCategories, value]);
           }
         }
-        return { ...prev, category: updatedCategory };
+        return { ...prev, category: updatedCategories };
       });
     }
   };
+
+  // const handleCategorySelectChangeAddMode = (e) => {
+  //   const value = e.target.value;
+  //   setSelectedCategory(value);
+  //   if (value !== 'other') {
+  //     setNewRecipe(prev => ({
+  //       ...prev,
+  //       category: [...prev.category, value]
+  //     }));
+  //   }
+  // };
+
 
   // Définition de la fonction 'handleAddNewCategory' qui ne prend aucun paramètre.
   // Cette fonction est appelée lorsqu'un utilisateur souhaite ajouter une nouvelle catégorie à la recette.
@@ -211,6 +225,26 @@ const [newEditStep, setNewEditStep] = useState('');
         ...prev,
         category: [...prev.category, newCategory]
       }));
+      setNewCategory('');
+    }
+  };
+
+  const handleAddNewCategoryEdit = () => {
+    if (newCategory) {
+      if (editRecipeId) {
+        // Mode édition
+        setEditRecipe(prev => ({
+          ...prev,
+          category: prev.category.includes(newCategory) ? prev.category : [...prev.category, newCategory]
+        }));
+      } 
+      // else {
+      //   // Mode ajout
+      //   setNewRecipe(prev => ({
+      //     ...prev,
+      //     category: prev.category.includes(newCategory) ? prev.category : [...prev.category, newCategory]
+      //   }));
+      // }
       setNewCategory('');
     }
   };
@@ -236,18 +270,23 @@ const [newEditStep, setNewEditStep] = useState('');
         return; // Arrêter l'exécution de la fonction si un champ requis est manquant.
       }
 
+      console.log("addRecipe newRecipe", newRecipe);
+      console.log("addRecipe recipeSteps", recipeSteps);
+
       // Déterminer les catégories à envoyer avec la nouvelle recette.
-      let categoriesToSend;
+      let categoriesToSend = newRecipe.category || [];
       if (selectedCategory === 'other' && newCategory) {
         // Si l'utilisateur a sélectionné 'other' et a entré une nouvelle catégorie.
         categoriesToSend = [newCategory];
       } else if (selectedCategory && selectedCategory !== 'other') {
         // Si une catégorie existante est sélectionnée.
         categoriesToSend = [selectedCategory];
-      } else {
-        // Si aucune catégorie n'est spécifiée.
+      }
+
+      // Vérifiez si au moins une catégorie est spécifiée
+      if (categoriesToSend.length === 0) {
         console.error("Catégorie non spécifiée.");
-        return; // Arrêter l'exécution de la fonction.
+        return;
       }
 
       // Préparer les données de la nouvelle recette.
@@ -255,12 +294,13 @@ const [newEditStep, setNewEditStep] = useState('');
         ...newRecipe, // Copier toutes les propriétés de 'newRecipe'.
         steps: recipeSteps, // Ajouter les étapes ici
 
-        ingredients: selectedIngredients.map(item => ({        
+        ingredients: selectedIngredients.map(item => ({
           ingredient: item.ingredientId, // Utilisez uniquement l'ObjectId de l'ingrédient
           quantity: item.quantity
         }))
       };
-
+      console.log("Données de la recette à envoyer recipeData:", recipeData);
+      console.log("Catégories avant envoi :", newRecipe.category);
       console.log("newCategory:", newCategory);
       console.log("recipeData.category:", recipeData.category);
       console.log("newRecipe:", newRecipe);
@@ -272,7 +312,7 @@ const [newEditStep, setNewEditStep] = useState('');
         body: JSON.stringify(recipeData) // Convertir les données de la recette en JSON.
       });
 
-      console.log(" JSON.stringify(recipeData):", JSON.stringify(recipeData));
+      //console.log(" JSON.stringify(recipeData):", JSON.stringify(recipeData));
 
       // Vérifier si la requête a réussi.
       if (response.ok) {
@@ -299,7 +339,7 @@ const [newEditStep, setNewEditStep] = useState('');
   const startEdit = (recipe) => {
     // Définir l'ID de la recette en cours de modification.
     setEditRecipeId(recipe._id);
- 
+
     // Mettre à jour l'état 'editRecipe' avec les données de la recette sélectionnée.
     setEditRecipe({ ...recipe });
 
@@ -322,26 +362,24 @@ const [newEditStep, setNewEditStep] = useState('');
     setSelectedCategory(recipe.categories);
   };
 
-const addEditStep = () => {
-  if (newEditStep) {
-    setEditRecipeSteps([...editRecipeSteps, newEditStep]);
-    setNewEditStep('');
-  }
-};
+  const addEditStep = () => {
+    if (newEditStep) {
+      setEditRecipeSteps([...editRecipeSteps, newEditStep]);
+      setNewEditStep('');
+    }
+  };
 
-const handleEditStepChange = (index, newStep) => {
-  const updatedSteps = editRecipeSteps.map((step, i) => i === index ? newStep : step);
-  setEditRecipeSteps(updatedSteps);
-};
+  const handleEditStepChange = (index, newStep) => {
+    const updatedSteps = editRecipeSteps.map((step, i) => i === index ? newStep : step);
+    setEditRecipeSteps(updatedSteps);
+  };
 
   // Définition de la fonction asynchrone 'editRecipeSubmit'.
   const editRecipeSubmit = async () => {
     try {
       // Copie de l'état actuel de 'editRecipe' dans 'recipeData'.
-      let recipeData = { ...editRecipe, steps: editRecipeSteps  };
+      let recipeData = { ...editRecipe, steps: editRecipeSteps };
       console.log("recipeData:", recipeData);
-
-      
 
       // Préparation des données des ingrédients pour la requête
       recipeData.ingredients = selectedIngredientsEdit.map(ing => ({
@@ -359,8 +397,6 @@ const handleEditStepChange = (index, newStep) => {
       console.log("categoriesToUpdate:", categoriesToUpdate);
       // Mise à jour des catégories dans recipeData
       categoriesToUpdate = [...new Set(categoriesToUpdate)];
-
-
 
       recipeData.category = categoriesToUpdate;
 
@@ -453,23 +489,23 @@ const handleEditStepChange = (index, newStep) => {
             placeholder="Description"
           />
 
-         {/* Champ de saisie pour une nouvelle étape */}
-<input
-  type="text"
-  value={newStep}
-  onChange={(e) => setNewStep(e.target.value)}
-  placeholder="Ajouter une nouvelle étape"
-/>
+          {/* Champ de saisie pour une nouvelle étape */}
+          <input
+            type="text"
+            value={newStep}
+            onChange={(e) => setNewStep(e.target.value)}
+            placeholder="Ajouter une nouvelle étape"
+          />
 
-{/* Bouton pour ajouter une étape */}
-<button onClick={addStep}>Ajouter une étape</button>
+          {/* Bouton pour ajouter une étape */}
+          <button onClick={addStep}>Ajouter une étape</button>
 
-{/* Affichage des étapes ajoutées */}
-<ul>
-  {recipeSteps.map((step, index) => (
-    <li key={index}>{step}</li>
-  ))}
-</ul>
+          {/* Affichage des étapes ajoutées */}
+          <ul>
+            {recipeSteps.map((step, index) => (
+              <li key={index}>{step}</li>
+            ))}
+          </ul>
 
           {/* Champ de saisie pour le temps de préparation */}
           <input
@@ -493,7 +529,7 @@ const handleEditStepChange = (index, newStep) => {
             />
 
             <select name="ingredient" onChange={handleIngredientSelect} value="">
-            <option value="" disabled>Ajouter un ingrédient</option>
+              <option value="" disabled>Ajouter un ingrédient</option>
               {ingredients
                 .filter(ingredient => ingredient.name.toLowerCase().includes(ingredientFilter.toLowerCase()))
                 .map(ingredient => (
@@ -523,7 +559,8 @@ const handleEditStepChange = (index, newStep) => {
           <label htmlFor="category">Catégorie :</label>
           <select name="category" value={selectedCategory} onChange={handleCategorySelectChangeAddMode}>
             {categories.map(category => <option key={category} value={category}>{category}</option>)}
-            <option value="other">Autre</option>
+            <option value="choose">Choisir une categorie</option>
+            <option value="other">Créer une Autre catégorie</option>
           </select>
 
           {/* Ajout d'une nouvelle catégorie si 'other' est sélectionné */}
@@ -540,8 +577,7 @@ const handleEditStepChange = (index, newStep) => {
           )}
 
           {/* Affichage des catégories existantes en mode édition */}
-          {console.log("selectedCategory:", selectedCategory)}
-          {console.log("newCategory:", newCategory)}
+
           <ul>
             {newRecipe && newRecipe.category && newRecipe.category.map((category, index) => (
               <li key={index}>{category}</li>
@@ -575,28 +611,28 @@ const handleEditStepChange = (index, newStep) => {
           />
 
           {/* Champ de saisie pour une nouvelle étape en mode édition */}
-<input
-  type="text"
-  value={newEditStep}
-  onChange={(e) => setNewEditStep(e.target.value)}
-  placeholder="Ajouter une nouvelle étape"
-/>
+          <input
+            type="text"
+            value={newEditStep}
+            onChange={(e) => setNewEditStep(e.target.value)}
+            placeholder="Ajouter une nouvelle étape"
+          />
 
-{/* Bouton pour ajouter une étape en mode édition */}
-<button onClick={addEditStep}>Ajouter une étape</button>
+          {/* Bouton pour ajouter une étape en mode édition */}
+          <button onClick={addEditStep}>Ajouter une étape</button>
 
-{/* Affichage et modification des étapes ajoutées en mode édition */}
-<ul>
-  {editRecipeSteps.map((step, index) => (
-    <li key={index}>
-      <input
-        type="text"
-        value={step}
-        onChange={(e) => handleEditStepChange(index, e.target.value)}
-      />
-    </li>
-  ))}
-</ul>
+          {/* Affichage et modification des étapes ajoutées en mode édition */}
+          <ul>
+            {editRecipeSteps.map((step, index) => (
+              <li key={index}>
+                <input
+                  type="text"
+                  value={step}
+                  onChange={(e) => handleEditStepChange(index, e.target.value)}
+                />
+              </li>
+            ))}
+          </ul>
 
           {/* Champ de saisie pour le temps de préparation en mode édition */}
           <input
@@ -617,13 +653,13 @@ const handleEditStepChange = (index, newStep) => {
               value={ingredientFilter}
               onChange={(e) => setIngredientFilter(e.target.value)}
             />
-            <select name="ingredient" onChange={handleIngredientSelectEdit}  value="">
-            <option value="" disabled>Ajouter un ingrédient</option>
+            <select name="ingredient" onChange={handleIngredientSelectEdit} value="">
+              <option value="" disabled>Ajouter un ingrédient</option>
               {ingredients
-              .filter(ingredient => ingredient.name.toLowerCase().includes(ingredientFilter.toLowerCase()))
-              .map(ingredient => (
-                <option key={ingredient._id} value={ingredient._id}>{ingredient.name}</option>
-              ))}
+                .filter(ingredient => ingredient.name.toLowerCase().includes(ingredientFilter.toLowerCase()))
+                .map(ingredient => (
+                  <option key={ingredient._id} value={ingredient._id}>{ingredient.name}</option>
+                ))}
             </select>
           </div>
 
@@ -652,12 +688,12 @@ const handleEditStepChange = (index, newStep) => {
             <label htmlFor="category">Catégorie :</label>
             <select name="category" value={selectedCategory} onChange={handleCategorySelectChangeEditMode}>
 
-              {categories.map(category => <option key={category} value={category}>{category}</option>)}
-              <option value="other">Autre</option>
+              {categories.map(category => <option key={category} value={category}>{category}</option>)}             
+              <option value="other">Créer une Autre catégorie</option>
             </select>
 
             {/* Affichage des catégories existantes en mode édition */}
-            {console.log("selectedCategory:", selectedCategory)}
+
             <ul>
               {editRecipe && editRecipe.category && editRecipe.category.map((category, index) => (
                 <li key={index}>
@@ -677,7 +713,7 @@ const handleEditStepChange = (index, newStep) => {
                   onChange={(e) => setNewCategory(e.target.value)}
                   placeholder="Nouvelle catégorie"
                 />
-                <button onClick={handleAddNewCategory}>Ajouter Catégorie</button>
+                <button onClick={handleAddNewCategoryEdit}>Ajouter Catégorie</button>
               </div>
             )}
           </div>
