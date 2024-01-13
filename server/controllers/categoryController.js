@@ -11,11 +11,11 @@ exports.addCategoryToRecipe = async (req, res) => {
             return res.status(404).send('Recipe not found');
         }
 
-        if (recipe.category.includes(category)) {
+        if (recipe.categories.includes(category)) {
             return res.status(400).send('Category already exists');
         }
 
-        recipe.category.push(category);
+        recipe.categories.push(category);
         await recipe.save();
         
         res.status(200).json({
@@ -40,7 +40,7 @@ exports.removeCategoryFromRecipe = async (req, res) => {
             return res.status(404).send('Recipe not found');
         }
 
-        recipe.category = recipe.category.filter(cat => cat !== category);
+        recipe.categories = recipe.categories.filter(cat => cat !== category);
         await recipe.save();
         
         res.status(200).json({
@@ -59,8 +59,8 @@ exports.listCategories = async (req, res) => {
     try {
         // Aggregate to collect all categories across recipes
         const categories = await Recipe.aggregate([
-            { $unwind: '$category' }, // Deconstructs the category array
-            { $group: { _id: '$category' } }, // Groups by category
+            { $unwind: '$categories' }, // Deconstructs the categories array
+            { $group: { _id: '$categories' } }, // Groups by categories
             { $sort: { _id: 1 } } // Sorts the categories alphabetically
         ]);
 
@@ -95,7 +95,7 @@ exports.listRecipesCategories = async (req, res) => {
         res.status(200).json({
             status: 'success',
             data: {
-                categories: recipe.category
+                categories: recipe.categories
             }
         });
     } catch (error) {

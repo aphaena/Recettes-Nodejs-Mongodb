@@ -23,7 +23,7 @@ const recipeSchema = new mongoose.Schema({
   prepTime: Number,
   images: [String],
   comments: [commentSchema],
-  category: [String],
+  categories: [String],
    // required: true
    
   // Ajoutez d'autres champs nécessaires ici

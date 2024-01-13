@@ -1,30 +1,19 @@
 //recipeController.js
-const mongoose = require('mongoose'); // Assurez-vous d'importer mongoose
 const Recipe = require('../models/recipeModel');
 
 // Ajouter une nouvelle recette
 exports.addRecipe = async (req, res) => {
   try {
-    console.log("Ingrédients reçus:", JSON.stringify(req.body.ingredients));
     const imagePaths = req.files.map(file => file.path);
-
-    // Convertir les ingredientId en ObjectId
-   // Assurez-vous que les ingrédients sont au format attendu par le schéma
-   const ingredients = req.body.ingredients.map(ing => ({
-    ingredient: ing.ingredientId, // Utilisez 'ingredient' pour correspondre au schéma
-    quantity: ing.quantity
-  }));
 
     const newRecipeData = {
       ...req.body,
+      categories: Array.isArray(req.body.categories) ? req.body.categories : [req.body.categories],
+      comments: Array.isArray(req.body.comments) ? req.body.comments : [req.body.comments],
       images: imagePaths,
-      ingredients: ingredients, // Utiliser les ingrédients convertis
-      categories: req.body.categories || [],
-      comments: req.body.comments || []
     };
 
     const newRecipe = await Recipe.create(newRecipeData);
-
     res.status(201).json({
       status: 'success',
       data: {
@@ -84,6 +73,8 @@ exports.updateRecipe = async (req, res) => {
 
     let updateData = {
       ...req.body,
+      categories: Array.isArray(req.body.categories) ? req.body.categories : [req.body.categories],
+      comments: Array.isArray(req.body.comments) ? req.body.comments : [req.body.comments],
     };
 
  // Gérer les images
@@ -113,7 +104,7 @@ exports.updateRecipe = async (req, res) => {
   }
 };
 
-// Mettre à jour une recette avant image
+// Mettre à jour une recette
 exports.updateRecipe_Old = async (req, res) => {
   try {
     const recipe = await Recipe.findByIdAndUpdate(req.params.id, req.body, {
@@ -146,26 +137,6 @@ exports.deleteRecipe = async (req, res) => {
     res.status(404).json({
       status: 'fail',
       message: 'Recette non trouvée'
-    });
-  }
-};
-
-exports.uploadImage = async (req, res) => {
-  try {
-    if (!req.file) {
-      throw new Error('Image file is required.');
-    }
-    const imageUrl = `${req.protocol}://${req.get('host')}/${req.file.path}`;
-    res.status(200).json({
-      status: 'success',
-      data: {
-        imageUrl: imageUrl
-      }
-    });
-  } catch (err) {
-    res.status(400).json({
-      status: 'fail',
-      message: err.message
     });
   }
 };

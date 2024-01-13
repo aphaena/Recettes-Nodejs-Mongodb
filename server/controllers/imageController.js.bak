@@ -125,26 +125,3 @@ exports.listAllImages = async (req, res) => {
         res.status(500).send(error.message);
     }
 };
-
-// imageController.js
-
-exports.uploadImage = async (req, res) => {
-    try {
-      if (!req.file) {
-        throw new Error('Image file is required.');
-      }
-      const imageUrl = `${req.protocol}://${req.get('host')}/${req.file.path}`;
-      res.status(200).json({
-        status: 'success',
-        data: {
-          imageUrl: imageUrl
-        }
-      });
-    } catch (err) {
-      res.status(400).json({
-        status: 'fail',
-        message: err.message
-      });
-    }
-  };
-  
