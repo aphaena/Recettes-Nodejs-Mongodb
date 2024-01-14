@@ -38,12 +38,14 @@ const RecipesManager = () => {
   }, []);
 
   const fetchRecipes = async () => {
+    console.log("start fetchRecipes");
     try {
       const response = await fetch(`${APIURL}/api/v1/recipes`);
       const data = await response.json();
       if (data && data.data && data.data.recipes) {
         setRecipes(data.data.recipes);
 
+        // todo  verifier si c'est utile !
         const allCategories = data.data.recipes.reduce((acc, recipe) => {
           // Vérifiez si la propriété categories existe et est un tableau
           if (Array.isArray(recipe.categories)) {
@@ -65,32 +67,6 @@ const RecipesManager = () => {
     }
   };
 
-
-  const fetchRecipes_OLD = async () => {
-    try {
-      const response = await fetch(`${APIURL}/api/v1/recipes`);
-      const data = await response.json();
-      if (data && data.data && data.data.recipes) {
-        setRecipes(data.data.recipes);
-        // Extraire toutes les catégories de toutes les recettes
-        const allCategories = data.data.recipes.reduce((acc, recipe) => {
-          recipe.categories.forEach(category => {
-            if (!acc.includes(category)) {
-              acc.push(category);
-            }
-          });
-          return acc;
-        }, []);
-
-        // Mettre à jour l'état des catégories avec les catégories uniques
-        setCategories(allCategories);
-      } else {
-        console.error('Données de recettes non trouvées dans la réponse');
-      }
-    } catch (error) {
-      console.error('Erreur lors de la récupération des recettes:', error);
-    }
-  };
 
   // Fonction pour récupérer les ingrédients
   const fetchIngredients = async () => {
@@ -348,12 +324,6 @@ const RecipesManager = () => {
       const formData = new FormData();
       formData.append('title', newRecipe.title);
       formData.append('description', newRecipe.description);
-      if (imageFiles && imageFiles.length > 0) {
-        imageFiles.forEach((file) => {
-          formData.append('images', file);
-        });
-      }
-
       formData.append('prepTime', newRecipe.prepTime);
       recipeSteps.forEach((step, index) => formData.append(`steps[${index}]`, step));
 
@@ -507,7 +477,7 @@ const RecipesManager = () => {
       });
 
       // Ajout des images
-      imageFiles.forEach(file => formData.append('images', file));
+      //imageFiles.forEach(file => formData.append('images', file));
 
       // Ajout des fichiers d'image, si disponibles
       if (imageFiles && imageFiles.length > 0) {
@@ -612,16 +582,19 @@ const RecipesManager = () => {
           />
 
           {/* Champ de saisie pour les images */}
+
           <input
             type="file"
             multiple
             onChange={(e) => setImageFiles([...e.target.files])}
             accept="image/*"
           />
-          <div>
-            {imageFiles.map((file, index) => (
-              <img key={index} src={URL.createObjectURL(file)} alt={`Aperçu ${index}`} />
-            ))}
+          <div className="image-container">
+            <div>
+              {imageFiles.map((file, index) => (
+                <img key={index} src={URL.createObjectURL(file)} alt={`Aperçu ${index}`} />
+              ))}
+            </div>
           </div>
           <div>
             {existingImages && existingImages.map((imageUrl, index) => (
@@ -689,7 +662,7 @@ const RecipesManager = () => {
             </select>
 
             <ul>
-              {selectedIngredients.map((item , index)=> (
+              {selectedIngredients.map((item, index) => (
                 <li key={item.ingredientId}>
                   {ingredients.find(ingredient => ingredient._id === item.ingredientId)?.name || item.ingredientId}
                   <input
@@ -699,7 +672,7 @@ const RecipesManager = () => {
                     placeholder="Quantité (en grammes)"
                   />
                   <div>gr.</div>
-                  <button onClick={() => removeIngredient(index )}>Supprimer</button>
+                  <button onClick={() => removeIngredient(index)}>Supprimer</button>
                 </li>
               ))}
             </ul>
@@ -767,10 +740,12 @@ const RecipesManager = () => {
             onChange={(e) => setImageFiles([...e.target.files])}
             accept="image/*"
           />
-          <div>
-            {imageFiles.map((file, index) => (
-              <img key={index} src={URL.createObjectURL(file)} alt={`Aperçu ${index}`} />
-            ))}
+          <div className="image-container">
+            <div>
+              {imageFiles.map((file, index) => (
+                <img key={index} src={URL.createObjectURL(file)} alt={`Aperçu ${index}`} />
+              ))}
+            </div>
           </div>
           <div>
             {existingImages && existingImages.map((imageUrl, index) => (
@@ -847,7 +822,7 @@ const RecipesManager = () => {
                     type="number"
                     value={item.quantity}
                     onChange={(e) => handleQuantityChangeEdit(item.ingredientId, e.target.value)}
-                    
+
                   />
                   <div>gr.</div>
                   <button onClick={() => removeIngredientEdit(index)}>Supprimer</button>

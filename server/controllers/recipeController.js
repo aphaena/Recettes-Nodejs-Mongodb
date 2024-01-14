@@ -5,9 +5,9 @@ const Recipe = require('../models/recipeModel');
 // Ajouter une nouvelle recette
 exports.addRecipe = async (req, res) => {
   try {
-
+console.log("addRecipe", JSON.stringify(req.body));
     const imagePaths = req.files.map(file => file.path);
-
+    console.log("imagePaths", JSON.stringify(imagePaths));
     // Convertir les ingredientId en ObjectId
     // Assurez-vous que les ingrédients sont au format attendu par le schéma
     const ingredients = req.body.ingredients.map(ing => ({
