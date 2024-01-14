@@ -107,21 +107,7 @@ const RecipesManager = () => {
     }
   };
 
-  const removeIngredient = (index) => {
-    setEditRecipe(prev => {
-      // Créer une copie des ingrédients actuels
-      const updatedIngredients = [...prev.ingredients];
-      // Supprimer l'ingrédient à l'index spécifié
-      updatedIngredients.splice(index, 1);
 
-      setSelectedIngredients(prevIngredients =>
-        prevIngredients.filter(id => id !== index)
-      );
-
-      // Retourner la recette mise à jour
-      return { ...prev, ingredients: updatedIngredients };
-    });
-  };
 
 
   const addStep = () => {
@@ -131,6 +117,20 @@ const RecipesManager = () => {
     }
   };
 
+  const addEditStep = () => {
+    if (newEditStep) {
+      setEditRecipeSteps([...editRecipeSteps, newEditStep]);
+      setNewEditStep('');
+    }
+  };
+
+  const removeStep = (index) => {
+    setRecipeSteps(currentSteps => currentSteps.filter((_, i) => i !== index));
+  };
+
+  const removeEditStep = (index) => {
+    setEditRecipeSteps(currentSteps => currentSteps.filter((_, i) => i !== index));
+  };
 
   const addImage = () => {
     if (newImageUrl) {
@@ -203,7 +203,7 @@ const RecipesManager = () => {
     const alreadySelected = selectedIngredients.some(item => item.ingredientId === selectedIngredientId);
 
     if (!alreadySelected) {
-      setSelectedIngredients([...selectedIngredients, { ingredientId: selectedIngredientId, quantity: 1 }]);
+      setSelectedIngredients([...selectedIngredients, { ingredientId: selectedIngredientId, quantity: 100 }]);
     }
   };
 
@@ -435,83 +435,6 @@ const RecipesManager = () => {
   };
 
 
-  // Définition de la fonction asynchrone 'addRecipe'.
-  const addRecipe_OLD = async () => {
-    try {
-      // Vérifier si tous les champs requis pour une nouvelle recette sont remplis.
-      if (!newRecipe.title || !newRecipe.description || !recipeSteps || newRecipe.prepTime === 0) {
-        console.error("Tous les champs requis doivent être remplis.");
-        return; // Arrêter l'exécution de la fonction si un champ requis est manquant.
-      }
-
-      console.log("addRecipe newRecipe", newRecipe);
-      console.log("addRecipe recipeSteps", recipeSteps);
-
-      // Déterminer les catégories à envoyer avec la nouvelle recette.
-      let categoriesToSend = newRecipe.categories || [];
-      if (selectedCategory === 'other' && newCategory) {
-        // Si l'utilisateur a sélectionné 'other' et a entré une nouvelle catégorie.
-        categoriesToSend = [newCategory];
-      } else if (selectedCategory && selectedCategory !== 'other') {
-        // Si une catégorie existante est sélectionnée.
-        categoriesToSend = [selectedCategory];
-      }
-
-      // Vérifiez si au moins une catégorie est spécifiée
-      if (categoriesToSend.length === 0) {
-        console.error("Catégorie non spécifiée.");
-        return;
-      }
-
-      // Préparer les données de la nouvelle recette.
-      const recipeData = {
-        ...newRecipe, // Copier toutes les propriétés de 'newRecipe'.
-        steps: recipeSteps, // Ajouter les étapes ici
-
-        ingredients: selectedIngredients.map(item => ({
-          ingredient: item.ingredientId, // Utilisez uniquement l'ObjectId de l'ingrédient
-          quantity: item.quantity
-        }))
-      };
-      console.log("Données de la recette à envoyer recipeData:", recipeData);
-      console.log("Catégories avant envoi :", newRecipe.categories);
-      console.log("newCategory:", newCategory);
-      console.log("recipeData.categories:", recipeData.categories);
-      console.log("newRecipe:", newRecipe);
-
-      // Envoyer une requête POST pour ajouter la nouvelle recette.
-      const response = await fetch(`${APIURL}/api/v1/recipes/recipe`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(recipeData) // Convertir les données de la recette en JSON.
-      });
-
-      //console.log(" JSON.stringify(recipeData):", JSON.stringify(recipeData));
-
-      // Vérifier si la requête a réussi.
-      if (response.ok) {
-        const updatedGlobalCategories = [...new Set([...categories, ...newRecipe.categories])];
-        setCategories(updatedGlobalCategories);
-        fetchRecipes(); // Récupérer la liste mise à jour des recettes.
-        // Réinitialiser les états pour les champs de saisie de la recette.
-        setNewRecipe({ title: '', description: '', steps: '', prepTime: 0, categories: [] });
-        setSelectedIngredients([]);
-        setNewCategory('');
-        setExistingImages([]);
-        setImageFiles([]);
-        setImageUrls([]);
-      } else {
-        // Gérer les erreurs de réponse.
-        const errorData = await response.json();
-        console.error('Erreur lors de l\'ajout de la recette:', errorData);
-      }
-    } catch (error) {
-      // Gérer les erreurs de la requête.
-      console.error('Erreur lors de l\'ajout de la recette:', error);
-    }
-  };
-
-
   // Définition de la fonction 'startEdit' qui prend en paramètre une recette.
   const startEdit = (recipe) => {
     console.log("startEdit recipe:", recipe);
@@ -542,6 +465,9 @@ const RecipesManager = () => {
       };
     });
 
+    // Mettre à jour les images existantes
+    setExistingImages(recipe.images || []);
+
     console.log("startEdit recipeIngredientIds: ", recipeIngredientIds);
 
     // Mettre à jour l'état 'selectedIngredients' avec les IDs des ingrédients de la recette.
@@ -552,12 +478,7 @@ const RecipesManager = () => {
     setSelectedCategory(recipe.categories);
   };
 
-  const addEditStep = () => {
-    if (newEditStep) {
-      setEditRecipeSteps([...editRecipeSteps, newEditStep]);
-      setNewEditStep('');
-    }
-  };
+
 
   const handleEditStepChange = (index, newStep) => {
     const updatedSteps = editRecipeSteps.map((step, i) => i === index ? newStep : step);
@@ -647,6 +568,9 @@ const RecipesManager = () => {
     setSelectedIngredientsEdit(updatedIngredients);
   };
 
+  const removeIngredient = (index) => {
+    setSelectedIngredients(prevIngredients => prevIngredients.filter((_, i) => i !== index));
+  };
 
   const deleteRecipe = async (recipeId) => {
     try {
@@ -719,10 +643,14 @@ const RecipesManager = () => {
           {/* Bouton pour ajouter une étape */}
           <button onClick={addStep}>Ajouter une étape</button>
 
+
           {/* Affichage des étapes ajoutées */}
           <ul>
             {recipeSteps.map((step, index) => (
-              <li key={index}>{step}</li>
+              <li key={index}>{step}
+                <button onClick={() => removeStep(index)}>Supprimer</button>
+              </li>
+
             ))}
           </ul>
 
@@ -734,6 +662,7 @@ const RecipesManager = () => {
             onChange={handleInputChange}
             placeholder="Temps de préparation (en minutes)"
           />
+
 
           {/* Sélection des ingrédients */}
           <div>
@@ -760,7 +689,7 @@ const RecipesManager = () => {
             </select>
 
             <ul>
-              {selectedIngredients.map(item => (
+              {selectedIngredients.map((item , index)=> (
                 <li key={item.ingredientId}>
                   {ingredients.find(ingredient => ingredient._id === item.ingredientId)?.name || item.ingredientId}
                   <input
@@ -769,6 +698,8 @@ const RecipesManager = () => {
                     onChange={(e) => handleQuantityChange(item.ingredientId, e.target.value)}
                     placeholder="Quantité (en grammes)"
                   />
+                  <div>gr.</div>
+                  <button onClick={() => removeIngredient(index )}>Supprimer</button>
                 </li>
               ))}
             </ul>
@@ -809,7 +740,7 @@ const RecipesManager = () => {
         </div>
       )}
 
-
+      {/* ************************************************************************************** */}
       {editRecipeId && (
         <div>
           {/* Champ de saisie pour le titre de la recette en mode édition */}
@@ -870,7 +801,10 @@ const RecipesManager = () => {
                   value={step}
                   onChange={(e) => handleEditStepChange(index, e.target.value)}
                 />
+                {/* Bouton pour supprimer l'étape */}
+                <button onClick={() => removeEditStep(index)}>Supprimer</button>
               </li>
+
             ))}
           </ul>
 
@@ -913,8 +847,9 @@ const RecipesManager = () => {
                     type="number"
                     value={item.quantity}
                     onChange={(e) => handleQuantityChangeEdit(item.ingredientId, e.target.value)}
-                    style={{ width: '50px', marginLeft: '10px' }}
+                    
                   />
+                  <div>gr.</div>
                   <button onClick={() => removeIngredientEdit(index)}>Supprimer</button>
                 </li>
               ))}
