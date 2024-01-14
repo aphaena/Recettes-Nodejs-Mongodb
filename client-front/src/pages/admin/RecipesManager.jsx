@@ -536,7 +536,7 @@ const RecipesManager = () => {
       console.log("startEdit ing._id", ing.ingredient._id);
       console.log("startEdit ingredient", ingredient);
       return {
-        _id: ing._id,
+        ingredientId: ing.ingredient._id,
         ingredientName: ingredient ? ingredient.name : "Ingrédient inconnu",
         quantity: ing.quantity
       };
@@ -564,74 +564,6 @@ const RecipesManager = () => {
     setEditRecipeSteps(updatedSteps);
   };
 
-  // Définition de la fonction asynchrone 'editRecipeSubmit'.
-  const editRecipeSubmit_OLD = async () => {
-    try {
-      // Copie de l'état actuel de 'editRecipe' dans 'recipeData'.
-      let recipeData = { ...editRecipe, steps: editRecipeSteps };
-      console.log("recipeData:", recipeData);
-
-      // Préparation des données des ingrédients pour la requête
-      recipeData.ingredients = selectedIngredientsEdit.map(ing => ({
-        ingredient: ing.ingredientId,
-        quantity: ing.quantity || '100' // Assurez-vous que la quantité est définie
-      }));
-
-      // Préparation des catégories
-      let categoriesToUpdate = selectedCategory === 'other' && newCategory
-        ? [...recipeData.categories, newCategory]
-        : recipeData.categories;
-
-      console.log("newCategory:", newCategory);
-      console.log("recipeData.category:", recipeData.categories);
-      console.log("categoriesToUpdate:", categoriesToUpdate);
-      // Mise à jour des catégories dans recipeData
-      categoriesToUpdate = [...new Set(categoriesToUpdate)];
-
-      recipeData.categories = categoriesToUpdate;
-
-      console.log("recipeData:", recipeData);
-      console.log("recipeData.category:", recipeData.categories);
-
-      // Vérification si au moins une catégorie est définie.
-      if (!recipeData.categories.length) {
-        console.error("Au moins une catégorie est requise.");
-        return;
-      }
-
-      console.log("JSON.stringify(recipeData):", JSON.stringify(recipeData));
-
-      // Envoi de la requête de mise à jour de la recette.
-      const response = await fetch(`${APIURL}/api/v1/recipes/recipe/${editRecipeId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(recipeData)
-      });
-
-      // Traitement de la réponse.
-      if (response.ok) {
-        // Réinitialisation des états après la mise à jour réussie.
-        const updatedGlobalCategories = [...new Set([...categories, ...editRecipe.categories])];
-        setCategories(updatedGlobalCategories);
-        setEditRecipeId(null);
-        setEditRecipe({});
-        fetchRecipes();
-        setSelectedIngredients([]);
-        setNewCategory('');
-        setSelectedCategory('');
-        setExistingImages([]);
-        setImageFiles([]);
-        setImageUrls([]);
-      } else {
-        // Gestion des erreurs de la réponse.
-        const errorData = await response.json();
-        console.error('Erreur lors de la modification de la recette:', errorData.message);
-      }
-    } catch (error) {
-      // Gestion des erreurs lors de l'exécution de la requête.
-      console.error('Erreur lors de la modification de la recette:', error);
-    }
-  };
 
   // Définition de la fonction asynchrone 'editRecipeSubmit'.
   const editRecipeSubmit = async () => {
@@ -647,8 +579,10 @@ const RecipesManager = () => {
 
       // Ajout des ingrédients
       selectedIngredientsEdit.forEach((item, index) => {
-        formData.append(`ingredients[${index}][ingredientId]`, item.ingredientId);
-        formData.append(`ingredients[${index}][quantity]`, item.quantity);
+        if (item.ingredientId) {
+          formData.append(`ingredients[${index}][ingredientId]`, item.ingredientId);
+          formData.append(`ingredients[${index}][quantity]`, item.quantity);
+        }
       });
 
       // Ajout des images

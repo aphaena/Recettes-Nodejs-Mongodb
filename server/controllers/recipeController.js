@@ -5,22 +5,22 @@ const Recipe = require('../models/recipeModel');
 // Ajouter une nouvelle recette
 exports.addRecipe = async (req, res) => {
   try {
-    console.log("Ingrédients reçus:", JSON.stringify(req.body.ingredients));
+
     const imagePaths = req.files.map(file => file.path);
 
     // Convertir les ingredientId en ObjectId
-   // Assurez-vous que les ingrédients sont au format attendu par le schéma
-   const ingredients = req.body.ingredients.map(ing => ({
-    ingredient: ing.ingredientId, // Utilisez 'ingredient' pour correspondre au schéma
-    quantity: ing.quantity
-  }));
+    // Assurez-vous que les ingrédients sont au format attendu par le schéma
+    const ingredients = req.body.ingredients.map(ing => ({
+      ingredient: ing.ingredientId, // Utilisez 'ingredient' pour correspondre au schéma
+      quantity: ing.quantity
+    }));
 
     const newRecipeData = {
       ...req.body,
       images: imagePaths,
       ingredients: ingredients, // Utiliser les ingrédients convertis
-      categories: req.body.categories || [],
-      comments: req.body.comments || []
+      //categories: req.body.categories || [],
+      //comments: req.body.comments || []
     };
 
     const newRecipe = await Recipe.create(newRecipeData);
@@ -79,20 +79,27 @@ exports.getRecipe = async (req, res) => {
 // Mettre à jour une recette
 exports.updateRecipe = async (req, res) => {
   try {
+    console.log("Ingrédients reçus:", JSON.stringify(req.body.ingredients));
     // Logique pour les images téléchargées
     const imagePaths = req.files ? req.files.map(file => file.path) : [];
 
+    const ingredients = req.body.ingredients.map(ing => ({
+      ingredient: ing.ingredientId, // Utilisez 'ingredient' pour correspondre au schéma
+      quantity: ing.quantity
+
+    }));
     let updateData = {
       ...req.body,
+      ingredients: ingredients,
     };
 
- // Gérer les images
- const existingImages = req.body.existingImages ? JSON.parse(req.body.existingImages) : [];
- if (imagePaths.length > 0) {
-   updateData.images = [...existingImages, ...imagePaths]; // Combine les images existantes et les nouvelles
- } else {
-   updateData.images = existingImages;
- }
+    // Gérer les images
+    const existingImages = req.body.existingImages ? JSON.parse(req.body.existingImages) : [];
+    if (imagePaths.length > 0) {
+      updateData.images = [...existingImages, ...imagePaths]; // Combine les images existantes et les nouvelles
+    } else {
+      updateData.images = existingImages;
+    }
 
     const recipe = await Recipe.findByIdAndUpdate(req.params.id, updateData, {
       new: true,
@@ -113,26 +120,7 @@ exports.updateRecipe = async (req, res) => {
   }
 };
 
-// Mettre à jour une recette avant image
-exports.updateRecipe_Old = async (req, res) => {
-  try {
-    const recipe = await Recipe.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true
-    }).populate('ingredients.ingredient');
-    res.status(200).json({
-      status: 'success',
-      data: {
-        recipe
-      }
-    });
-  } catch (err) {
-    res.status(400).json({
-      status: 'fail',
-      message: err.message
-    });
-  }
-};
+
 
 // Supprimer une recette
 exports.deleteRecipe = async (req, res) => {
