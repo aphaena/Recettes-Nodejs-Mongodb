@@ -21,8 +21,6 @@ const path = require('path');
 
 const upload = require('./middleware/upload'); 
 
-
-
 app.use(express.json());
 app.use(cors({
   origin: function (origin, callback) {
@@ -45,9 +43,9 @@ app.use('/api/v1/recipes', stepRoutes);
 
 app.use('/api/v1/ingredients', ingredientRoutes);
 
-// Route pour télécharger des images
+// Route pour tï¿½lï¿½charger des images
 app.post('/api/v1/upload-images', upload.array('images'), (req, res) => {
-  // Ici, vous pouvez traiter les fichiers téléchargés comme nécessaire
+  // Ici, vous pouvez traiter les fichiers tï¿½lï¿½chargï¿½s comme nï¿½cessaire
   res.status(200).json({
     status: 'success',
     files: req.files.map(file => file.path)

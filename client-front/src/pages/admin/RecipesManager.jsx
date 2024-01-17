@@ -582,7 +582,7 @@ const RecipesManager = () => {
           />
 
           {/* Champ de saisie pour les images */}
-
+          <label>Ajouter des images (sélection multiple) </label>
           <input
             type="file"
             multiple
@@ -680,10 +680,11 @@ const RecipesManager = () => {
 
           {/* Sélection des catégories */}
           <label htmlFor="categories">Catégorie :</label>
-          <select name="categories" value={selectedCategory} onChange={handleCategorySelectChangeAddMode}>
-            {categories.map(category => <option key={category} value={category}>{category}</option>)}
-            <option value="choose">Choisir une categorie</option>
+          <select name="categories" onChange={handleCategorySelectChangeAddMode} value={selectedCategory}>
+            <option value="choose" disabled>Choisir une categorie</option>
             <option value="other">Créer une Autre catégorie</option>
+            {categories.map(category => <option key={category} value={category}>{category}</option>)}
+
           </select>
 
           {/* Ajout d'une nouvelle catégorie si 'other' est sélectionné */}
@@ -734,6 +735,7 @@ const RecipesManager = () => {
           />
 
           {/* Champ de saisie pour les images */}
+          <label>Ajouter des images (sélection multiple) </label>
           <input
             type="file"
             multiple
@@ -754,6 +756,7 @@ const RecipesManager = () => {
                 <button onClick={() => handleRemoveImage(index)} className="delete-btn">X</button>
               </div>
             ))}
+            <div>les images sélectionnées remplacent les autres</div>
           </div>
 
           {/* Champ de saisie pour une nouvelle étape en mode édition */}

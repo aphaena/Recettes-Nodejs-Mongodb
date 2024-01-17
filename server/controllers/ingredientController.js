@@ -82,15 +82,27 @@ exports.updateIngredient = async (req, res) => {
 // Supprimer un ingrédient
 exports.deleteIngredient = async (req, res) => {
   try {
-    await Ingredient.findByIdAndDelete(req.params.id);
-    res.status(204).json({
-      status: 'success',
-      data: null
+    const ingredient = await Ingredient.findByIdAndDelete(req.params.id);
+    if (!ingredient) {
+      return res.status(404).json({
+        status: 'fail',
+        data: {
+          message: 'Ingrédient non trouvé',
+        }
+      });
+    }
+    res.status(200).json({
+      status: 'success',      
+      data: {
+        message: 'Ingrédient supprimé',
+      }
     });
   } catch (err) {
-    res.status(404).json({
+    res.status(400).json({
       status: 'fail',
-      message: 'Ingrédient non trouvé'
+      data: {
+        message: 'Erreur lors de la suppression de l\'ingrédient',
+      }
     });
   }
 };

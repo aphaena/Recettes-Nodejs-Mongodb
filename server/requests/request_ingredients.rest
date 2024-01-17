@@ -5,7 +5,7 @@ GET  http://localhost:3000/api/v1/ingredients
 Content-Type: application/json
 
 ###
-GET  http://localhost:3000/api/v1/ingredients/ingredient/6573158a027ed738bd0e1010
+GET  http://localhost:3000/api/v1/ingredients/ingredient/65a813dd979d884761a25c3b
 Content-Type: application/json
 
 ###
@@ -13,11 +13,11 @@ POST http://localhost:3000/api/v1/ingredients/ingredient
 Content-Type: application/json
 
 {
-  "name": "Farine de blé",
+  "nom": "Farine de blé T55",
   "quantite": 100,
   "nutritionInfo": {
-    "calories": 364,
-    "protein": 10,
+    "calories": 50,
+    "protein": 50,
     "fat": 1
   }
 }
@@ -25,7 +25,7 @@ Content-Type: application/json
 
 ###
 # Mettre à jour un ingrédient spécifique
-PATCH http://localhost:3000/api/v1/ingredients/ingredient/{ingredientId}
+PATCH http://localhost:3000/api/v1/ingredients/ingredient/65a81be9e27fbfa7513f9798
 Content-Type: application/json
 
 {
@@ -41,7 +41,7 @@ Content-Type: application/json
 
 ###
 # Supprimer un ingrédient spécifique
-DELETE http://localhost:3000/api/v1/ingredients/ingredient/{ingredientId}
+DELETE http://localhost:3000/api/v1/ingredients/ingredient/65a82069f63db3640ec2865c
 Content-Type: application/json
 
 
