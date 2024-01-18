@@ -10,8 +10,8 @@ mongoose.connect(db)
 
 // Liste des utilisateurs à ajouter
 const users = [
-  { username: 'Alice', email: 'alice@example.com', password: 'password123', role: 'user' },
-  { username: 'Bob', email: 'bob@example.com', password: 'password456', role: 'admin' },
+  { username: 'admin', email: 'admin@example.com', password: 'admin', role: 'admin' },
+  { username: 'Alice', email: 'alice@example.com', password: 'password123', role: 'user' },  
   { username: 'Charlie', email: 'charlie@example.com', password: 'password789', role: 'author' }
   // Ajoutez d'autres utilisateurs ici si nécessaire
 ];
