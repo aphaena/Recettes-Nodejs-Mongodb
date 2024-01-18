@@ -196,7 +196,7 @@ const RecipesManager = () => {
         setSelectedIngredientsEdit([...selectedIngredientsEdit, {
           ingredientId: selectedIngredientId,
           ingredientName: ingredient.name, // Ajouter le nom de l'ingrédient
-          quantity: '1' // Quantité initiale, ajustez selon vos besoins
+          quantity: '100' // Quantité initiale, ajustez selon vos besoins
         }]);
       }
     }
@@ -561,6 +561,7 @@ const RecipesManager = () => {
         <Navigation />
       </div>
       <h2>Gestion des Recettes</h2>
+      <h3> Créer une nouvelle recette</h3>
 
       {!editRecipeId && (
         <div>
@@ -680,7 +681,7 @@ const RecipesManager = () => {
 
           {/* Sélection des catégories */}
           <label htmlFor="categories">Catégorie :</label>
-          <select name="categories" onChange={handleCategorySelectChangeAddMode} value={selectedCategory}>
+          <select name="categories" onChange={handleCategorySelectChangeAddMode} value="choose">
             <option value="choose" disabled>Choisir une categorie</option>
             <option value="other">Créer une Autre catégorie</option>
             {categories.map(category => <option key={category} value={category}>{category}</option>)}
@@ -710,7 +711,7 @@ const RecipesManager = () => {
 
 
           {/* Bouton pour ajouter une nouvelle recette */}
-          <button onClick={addRecipe}>Ajouter une recette</button>
+          <button onClick={addRecipe}>Enregistrer la nouvelle recette</button>
         </div>
       )}
 
@@ -838,13 +839,14 @@ const RecipesManager = () => {
 
           {/* Sélection des catégories en mode édition */}
           <div>
-            <label htmlFor="categories">Catégorie :</label>
-            <select name="categories" value={selectedCategory} onChange={handleCategorySelectChangeEditMode}>
-
-              {categories.map(category => <option key={category} value={category}>{category}</option>)}
-              <option value="other">Créer une Autre catégorie</option>
-            </select>
-
+            <div>
+              <label htmlFor="categories">Catégorie :</label>
+              <select name="categories" onChange={handleCategorySelectChangeEditMode} value={"choose"}>
+                <option value="choose" disabled>Choisir une categorie</option>
+                {categories.map(category => <option key={category} value={category}>{category}</option>)}
+                <option value="other">Créer une Autre catégorie</option>
+              </select>
+            </div>
             {/* Affichage des catégories existantes en mode édition */}
 
             <ul>
@@ -881,6 +883,7 @@ const RecipesManager = () => {
 
 
       <div>
+        <div><h3>Modifier les recettes</h3>  </div>
         <ul>
           {recipes.map(recipe => (
             <li key={recipe._id}>

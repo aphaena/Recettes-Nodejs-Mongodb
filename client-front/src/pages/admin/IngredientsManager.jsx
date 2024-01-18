@@ -132,13 +132,13 @@ const IngredientsManager = () => {
           onChange={(e) => handleInputChange(e)}
           placeholder="Nom de l'ingrédient"
         />
-        <label>Quantité</label>
+        <label>Quantité en grammes : (calcul calories)</label>
         <input
           type="text"
           name="quantite"
           value={newIngredient.quantite}
           onChange={(e) => handleInputChange(e)}
-          placeholder="La quantité moyenne en gramme pour une unité"
+          placeholder="La quantité moyenne en gramme pour une unité pour le calcul des calories"
         />
          <label>Calories</label>
         <input
@@ -182,10 +182,10 @@ const IngredientsManager = () => {
           <label>Quantité</label>
           <input
             type="text"
-            name="Quantité"
+            name="quantite"
             value={editIngredient.quantite}
             onChange={(e) => handleInputChange(e, true)}
-            placeholder="Quantité"
+            placeholder="Quantité en gramme pour le nombre de calories"
           />
           <label>Calories</label>
           <input

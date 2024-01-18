@@ -156,6 +156,20 @@ body {
     width: 150px; 
     height: auto;
   }
+
+
+  .image-display {
+    position: relative;
+    display: inline-block; 
+    margin: 20px;
+  }
+
+  .image-display img {
+    width: 500px; 
+    height: auto;
+    border-radius: 1em;
+    margin-inline: 10px;
+  }
   
   .delete-btn {
     position: absolute;
