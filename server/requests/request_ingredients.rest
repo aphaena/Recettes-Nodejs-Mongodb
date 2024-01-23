@@ -30,7 +30,7 @@ Content-Type: application/json
 
 {
   "name": "Farine de blé mise à jour",
-  "quantite": 150,
+  "quantite": 100,
   "nutritionInfo": {
     "calories": 350,
     "protein": 11,

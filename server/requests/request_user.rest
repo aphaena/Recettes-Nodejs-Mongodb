@@ -38,14 +38,14 @@ Content-Type: application/json
 ###
 # Get a specific user
 GET http://localhost:3000/api/v1/users/{userId}
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NzE5ZjcyYTg1YWI1MDQ3ZTcyYTNlYiIsImlhdCI6MTcwMjYzNjY0MSwiZXhwIjoxNzEwNDEyNjQxfQ.d-i-YfukCQrGvh7JAj8FtXnAgH-YyuK0i0_2tPy4pcg
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 
 ###
 # Update a specific user
 PATCH http://localhost:3000/api/v1/users/{userId}
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NzE5ZjcyYTg1YWI1MDQ3ZTcyYTNlYiIsImlhdCI6MTcwMjYzNjY0MSwiZXhwIjoxNzEwNDEyNjQxfQ.d-i-YfukCQrGvh7JAj8FtXnAgH-YyuK0i0_2tPy4pcg
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -57,12 +57,12 @@ Content-Type: application/json
 ###
 # Delete a specific user
 DELETE http://localhost:3000/api/v1/users/{userId}
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NzE5ZjcyYTg1YWI1MDQ3ZTcyYTNlYiIsImlhdCI6MTcwMjYzNjY0MSwiZXhwIjoxNzEwNDEyNjQxfQ.d-i-YfukCQrGvh7JAj8FtXnAgH-YyuK0i0_2tPy4pcg
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 
 ###
 # list all users
 GET http://localhost:3000/api/v1/users/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NzE5ZjcyYTg1YWI1MDQ3ZTcyYTNlYiIsImlhdCI6MTcwMjYzNjY0MSwiZXhwIjoxNzEwNDEyNjQxfQ.d-i-YfukCQrGvh7JAj8FtXnAgH-YyuK0i0_2tPy4pcg
+Authorization: Bearer {{token}}
 Content-Type: application/json

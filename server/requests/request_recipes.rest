@@ -17,11 +17,11 @@ Content-Type: application/json
    "ingredients": [
     {
       "ingredient": "65786e03872a0031c3c1c241",
-      "quantity": "200g"
+      "quantity": "200"
     },
       {
       "ingredient": "65786e03872a0031c3c1c242",
-      "quantity": "200g"
+      "quantity": "200"
     }
   ],
   "steps": [
@@ -63,15 +63,15 @@ Content-Type: application/json
     {
       "name": "Chocolat",
       "marque": "swizzmax",
-      "quantity": "200g"
+      "quantity": "200"
     },
     {
       "name": "Beurre",
-      "quantity": "100g"
+      "quantity": "100"
     },
     {
       "name": "Sucre",
-      "quantity": "150g"
+      "quantity": "150"
     },
     {
       "name": "Oeufs",
@@ -79,7 +79,7 @@ Content-Type: application/json
     },
     {
       "name": "Farine",
-      "quantity": "200g"
+      "quantity": "200"
     }
     // Ajoutez d'autres ingrédients ici si nécessaire
   ],

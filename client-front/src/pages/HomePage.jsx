@@ -42,6 +42,7 @@ function HomePage() {
       if (response.ok) {
         // Enregistrer le token dans le localStorage
         localStorage.setItem('token', data.token);
+        localStorage.setItem('userEmail', email); // Stocker l'email
 
         // Gérer la sauvegarde du token, la gestion de l'état d'authentification, etc.
         console.log('Connexion réussie:', data);
